@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ProductDetail from "./pages/Product/ProductDetail";
 import MainLayout from "./layout/MainLayout";
+import ShoppingCartPage from "./pages/ShoppingCartPage/ShoppingCartPage";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ const App = () => (
           <Route element={<MainLayout />}>
             <Route path="/" element={<Index />} />
             <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/carrito" element={<ShoppingCartPage />} />
             {/* Añade más rutas aquí según necesites */}
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
