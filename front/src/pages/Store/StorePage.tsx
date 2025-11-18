@@ -16,14 +16,14 @@ const StorePage = () => {
         <div className="relative z-10 mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
             <Recycle className="w-4 h-4" />
-            Productos 100% Sostenibles
+            Catálogo Sostenible
           </div>
           <h1 className="text-5xl font-bold mb-4 text-gray-900">
             Tienda <span className="text-green-600">Ecológica</span>
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Cada producto incluye métricas detalladas de impacto ambiental para
-            que puedas tomar decisiones informadas
+            Descubre productos diseñados con el planeta en mente. Cada compra
+            contribuye a un futuro más sostenible.
           </p>
         </div>
       </section>

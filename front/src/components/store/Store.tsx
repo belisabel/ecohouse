@@ -6,17 +6,39 @@ import { Filter, Loader2, Recycle, Search, X } from "lucide-react";
 import { SearchBar } from "./searchBar";
 import SidebaFilterPanel from "./SidebaFilterPanel";
 
+export interface FilterState {
+  materials: string[];
+  origin: string;
+  impact: string;
+  priceRange: string;
+  minPrice: string;
+  maxPrice: string;
+  brands: string[];
+}
+
 export default function Store() {
   const [productsFiltered, setProductsFiltered] = React.useState(products);
   const [isLoading, setIsLoading] = React.useState(false);
   const [activeCategory, setActiveCategory] = React.useState("Todos");
   const [searchQuery, setSearchQuery] = React.useState("");
   const [showFilterPanel, setShowFilterPanel] = React.useState(false);
- 
+  const [filters, setFilters] = React.useState<FilterState>({
+    materials: [],
+    origin: "",
+    impact: "",
+    priceRange: "",
+    minPrice: "",
+    maxPrice: "",
+    brands: [],
+  });
 
   const categories = [...new Set(products.map((p) => p.category))];
 
-  const applyFilters = (category: string, search: string) => {
+  const applyFilters = (
+    category: string,
+    search: string,
+    currentFilters: FilterState
+  ) => {
     setIsLoading(true);
 
     setTimeout(() => {
@@ -37,6 +59,62 @@ export default function Store() {
         );
       }
 
+      // Filtrar por materiales
+      if (currentFilters.materials.length > 0) {
+        filtered = filtered.filter((product) =>
+          product.materials.some((material) =>
+            currentFilters.materials.some((filterMaterial) =>
+              material.toLowerCase().includes(filterMaterial.toLowerCase())
+            )
+          )
+        );
+      }
+
+      // Filtrar por impacto ecológico
+      if (currentFilters.impact) {
+        filtered = filtered.filter((product) => {
+          const recyclable = product.impact.recyclable;
+          if (currentFilters.impact === "Bajo") {
+            return recyclable < 70;
+          } else if (currentFilters.impact === "Medio") {
+            return recyclable >= 70 && recyclable < 85;
+          } else if (currentFilters.impact === "Alto") {
+            return recyclable >= 85;
+          }
+          return true;
+        });
+      }
+
+      // Filtrar por rango de precio predefinido
+      if (currentFilters.priceRange) {
+        filtered = filtered.filter((product) => {
+          const price = product.price;
+          switch (currentFilters.priceRange) {
+            case "Hasta €25":
+              return price <= 25;
+            case "€25 a €50":
+              return price > 25 && price <= 50;
+            case "€50 a €75":
+              return price > 50 && price <= 75;
+            case "€75 a €100":
+              return price > 75 && price <= 100;
+            case "Más de €100":
+              return price > 100;
+            default:
+              return true;
+          }
+        });
+      }
+
+      // Filtrar por rango de precio personalizado
+      if (currentFilters.minPrice || currentFilters.maxPrice) {
+        const min = parseFloat(currentFilters.minPrice) || 0;
+        const max = parseFloat(currentFilters.maxPrice) || Infinity;
+        filtered = filtered.filter(
+          (product) => product.price >= min && product.price <= max
+        );
+      }
+
       setProductsFiltered(filtered);
       setIsLoading(false);
     }, 300);
@@ -44,24 +122,46 @@ export default function Store() {
 
   const handleFilter = (category: string) => {
     setActiveCategory(category);
-    applyFilters(category, searchQuery);
+    applyFilters(category, searchQuery, filters);
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
-    applyFilters(activeCategory, value);
+    applyFilters(activeCategory, value, filters);
   };
 
   const clearSearch = () => {
     setSearchQuery("");
-    applyFilters(activeCategory, "");
+    applyFilters(activeCategory, "", filters);
   };
 
   const handleShowAll = () => {
     setActiveCategory("Todos");
     setSearchQuery("");
-    applyFilters("Todos", "");
+    setFilters({
+      materials: [],
+      origin: "",
+      impact: "",
+      priceRange: "",
+      minPrice: "",
+      maxPrice: "",
+      brands: [],
+    });
+    applyFilters("Todos", "", {
+      materials: [],
+      origin: "",
+      impact: "",
+      priceRange: "",
+      minPrice: "",
+      maxPrice: "",
+      brands: [],
+    });
+  };
+
+  const handleFiltersChange = (newFilters: FilterState) => {
+    setFilters(newFilters);
+    applyFilters(activeCategory, searchQuery, newFilters);
   };
 
   return (
@@ -85,12 +185,14 @@ export default function Store() {
               isLoading={isLoading}
               categories={categories}
               handleShowAll={handleShowAll}
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
             />
 
-            {/* Overlay for mobile - CORREGIR EL Z-INDEX Y AGREGAR bg-black */}
+            {/* Overlay for mobile */}
             {showFilterPanel && (
               <div
-                className="fixed inset-0  bg-opacity-50 z-20 lg:hidden"
+                className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
                 onClick={() => setShowFilterPanel(false)}
               />
             )}
@@ -114,7 +216,14 @@ export default function Store() {
                     productos encontrados
                   </p>
                 </div>
-                {(searchQuery || activeCategory !== "Todos") && (
+                {(searchQuery ||
+                  activeCategory !== "Todos" ||
+                  filters.materials.length > 0 ||
+                  filters.origin ||
+                  filters.impact ||
+                  filters.priceRange ||
+                  filters.minPrice ||
+                  filters.maxPrice) && (
                   <button
                     onClick={handleShowAll}
                     className="text-green-600 hover:text-green-700 font-medium text-sm flex items-center gap-1"

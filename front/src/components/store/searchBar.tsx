@@ -9,7 +9,7 @@ interface SearchBarProps {
 
 export const SearchBar = ( { searchQuery, handleSearch, clearSearch }: SearchBarProps) => {
   return (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 mb-8">
+          <div className="bg-white rounded-2xl  p-4 mb-8">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
@@ -17,7 +17,7 @@ export const SearchBar = ( { searchQuery, handleSearch, clearSearch }: SearchBar
                 placeholder="Buscar productos sostenibles..."
                 value={searchQuery}
                 onChange={handleSearch}
-                className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full pl-12 pr-12 py-3  rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
               {searchQuery && (
                 <button
