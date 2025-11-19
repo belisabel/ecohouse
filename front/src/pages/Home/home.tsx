@@ -4,6 +4,7 @@ import { Leaf, Heart, Shield, TrendingDown } from "lucide-react";
 import heroImage from "../../assets/hero-eco.jpg";
 import { ProductCard } from "@/components/Products/ProductCard";
 import { Link } from "react-router-dom";
+import { routes } from "@/lib/routes";
 
 const Home = () => {
   const categories = [...new Set(products.map((p) => p.category))];
@@ -31,7 +32,7 @@ const Home = () => {
             Cada producto muestra su impacto ambiental real. Transparencia total para decisiones responsables.
           </p>
           <div className="flex gap-4 justify-center">
-            <Link to="/store">
+            <Link to={routes.store}>
             <Button size="lg" className="text-lg">
               Explorar Productos
             </Button>

@@ -4,12 +4,17 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Leaf, Heart, ShoppingBag } from "lucide-react";
 import { Product } from "@/data/products";
+import { useCartActions } from "@/store/cart.store";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {
+
+  const { addItem } = useCartActions();
+
+
   return (
     <Card className="group overflow-hidden transition-all hover:shadow-xl border border-gray-200 rounded-2xl bg-white p-0">
       <Link to={`/product/${product.id}`}>
@@ -66,6 +71,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           €{product.price.toFixed(2)}
         </span>
         <Button 
+         onClick={() => addItem(product, 1)}
           className="bg-green-600 hover:bg-green-700 text-white rounded-lg px-4 py-2 font-medium transition-colors flex items-center gap-2"
           size="sm"
         >
