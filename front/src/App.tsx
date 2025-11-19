@@ -11,6 +11,7 @@ import ShoppingCartPage from "./pages/ShoppingCartPage/ShoppingCartPage";
 import LoginPage from "./pages/Login/LoginPage";
 import { routes } from "./lib/routes";
 import StorePage from "./pages/Store/StorePage";
+import CheckoutPage from "./pages/CheckoutPage/CheckoutPage";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
             <Route path={routes.shoppingCart} element={<ShoppingCartPage />} />
             <Route path={routes.login} element={<LoginPage />} />
             <Route path={routes.store} element={<StorePage />} />
+            <Route path={routes.checkout} element={<CheckoutPage />} />
             {/* Añade más rutas aquí según necesites */}
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

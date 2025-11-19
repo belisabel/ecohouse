@@ -64,7 +64,7 @@ export default function Store() {
         filtered = filtered.filter((product) =>
           product.materials.some((material) =>
             currentFilters.materials.some((filterMaterial) =>
-              material.toLowerCase().includes(filterMaterial.toLowerCase())
+              material.name.toLowerCase().includes(filterMaterial.toLowerCase())
             )
           )
         );

@@ -6,6 +6,7 @@ export const routes = {
   shoppingCart: "/cart",
   login: "/auth",
   about :"/about",
+  checkout: "/checkout",
 
 
   //filtros
