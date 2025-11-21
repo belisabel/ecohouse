@@ -1,37 +1,33 @@
-### Java ###
+# Java
 *.class
-*.log
-*.ctxt
-
-### Package Files ###
 *.jar
 *.war
 *.ear
 
-### Maven ###
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-
-### IntelliJ IDEA ###
-.idea/
-*.iws
-*.iml
-*.ipr
-
-### VS Code ###
-.vscode/
-
-### OS ###
-.DS_Store
-Thumbs.db
-
-### Spring Boot ###
-/out/
-
-### Logs ###
-logs/
+# Logs
 *.log
+
+# Spring Boot
+target/
+bin/
+
+# Maven
+.mvn/
+.settings/
+
+# Gradle
+.gradle/
+build/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# OS files
+.DS_Store
+
+# Application configs
+application-dev.properties
+application-prod.properties
+application.properties
