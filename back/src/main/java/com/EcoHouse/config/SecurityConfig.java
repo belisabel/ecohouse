@@ -45,4 +45,27 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+    /** este bean está siendo creado para: 
+    ✅ Habilita CORS para todos los orígenes (allowedOrigins("*"))
+    ✅ Permite todos los métodos HTTP (GET, POST, PUT, DELETE, PATCH, OPTIONS)
+    ✅ Permite todos los headers
+    ✅ Aplica a todos los endpoints (/**)
+    ✅ Sin errores de compilación
+    **/
+    @Bean
+    public WebMvcConfigurer corsConfigurer() { 
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins("*")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+                        .allowedHeaders("*")
+                        .maxAge(3600);
+            }
+        };
+    }
+
+    
 }
