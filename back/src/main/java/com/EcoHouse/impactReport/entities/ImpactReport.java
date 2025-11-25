@@ -3,19 +3,40 @@ package com.EcoHouse.impactReport.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Table;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Entity
+@Table(name = "impact_reports")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ImpactReport {
 
     @Id
-    @generatedValue(GenerationType.IDENTITY)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name= "customerId", nullable = false)
-    private long customerId;
+    @Column(name = "customer_id", nullable = false)
+    private Long customerId;
 
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
@@ -43,7 +64,7 @@ public class ImpactReport {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "report_type", nullable = false, length = 20)
-    private ReportType reportType;
+    private com.EcoHouse.impactReport.Enum.ReportType reportType;
 
     @Column(name = "sustainable_product_ids", columnDefinition = "TEXT")
     private String sustainableProductIds;

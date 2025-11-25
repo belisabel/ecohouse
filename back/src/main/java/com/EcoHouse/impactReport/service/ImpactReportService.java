@@ -4,11 +4,7 @@ import com.EcoHouse.impactReport.dtoRequest.ImpactReportRequestDto;
 import com.EcoHouse.impactReport.dtoResponse.ImpactReportResponseDto;
 import com.EcoHouse.impactReport.entities.ImpactReport;
 import com.EcoHouse.impactReport.repository.ImpactReportRepository;
-//import com.EcoHouse.service.external.OrderService;
-//import com.EcoHouse.service.external.ProductService;
 import com.EcoHouse.impactReport.mapper.ImpactReportMapper;
-//import com.EcoHouse.backend4.exception.ReportAlreadyExistsException;
-//import com.EcoHouse.backend4.exception.InvalidDateRangeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,22 +12,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-//..
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ImpactReportService {
 
     private final ImpactReportRepository impactReportRepository;
-//    private final OrderService orderService;
-//    private final ProductService productService;
     private final ImpactReportMapper mapper;
-//    private final ImpactCalculationService calculationService;
+    private final CalculationService calculationService;
 
     @Transactional
     public ImpactReportResponseDto generateReport(ImpactReportRequestDto request) {
@@ -42,46 +38,25 @@ public class ImpactReportService {
         validateRequest(request);
         checkIfReportAlreadyExists(request);
 
-        // 1. Obtener datos de órdenes del Backend 3
-//        List<OrderDto> customerOrders = orderService.getOrdersByCustomerAndDateRange(
-//                request.getCustomerId(),
-//                request.getStartDate(),
-//                request.getEndDate()
-//        );
-
-//        if (customerOrders.isEmpty()) {
-//            log.warn("No orders found for customer {} in the specified date range",
-//                    request.getCustomerId());
-//        }
+        // 1. Obtener datos de órdenes (no disponible en este repo -> usar lista vacía)
+        List<OrderDto> customerOrders = Collections.emptyList();
 
         // 2. Calcular métricas de impacto
-//        ImpactMetrics metrics = calculationService.calculateImpactMetrics(customerOrders);
+        ImpactMetrics metrics = calculationService.calculateImpactMetrics(customerOrders);
 
-        // 3. Obtener datos adicionales si se solicitan
+        // 3. Obtener datos adicionales si se solicitan (dejamos nulos / vacíos)
         String sustainableProductIds = null;
         String categoryBreakdown = null;
         String monthlyTrend = null;
 
-//        if (request.getIncludeProductBreakdown()) {
-//            sustainableProductIds = calculationService.getSustainableProductIdsAsJson(customerOrders);
-//        }
-//
-//        if (request.getIncludeCategoryAnalysis()) {
-//            categoryBreakdown = calculationService.getCategoryBreakdownAsJson(customerOrders);
-//        }
-//
-//        if (request.getIncludeMonthlyTrend()) {
-//            monthlyTrend = calculationService.getMonthlyTrendAsJson(customerOrders, request.getStartDate(), request.getEndDate());
-//        }
-
-        // 4. Crear y guardar entidad ImpactReport
+        // 4. Crear y guardar entidad ImpactReport (conversión LocalDateTime -> LocalDate)
         ImpactReport report = ImpactReport.builder()
                 .customerId(request.getCustomerId())
-                .startDate(request.getStartDate())
-                .endDate(request.getEndDate())
+                .startDate(request.getStartDate() != null ? request.getStartDate().toLocalDate() : null)
+                .endDate(request.getEndDate() != null ? request.getEndDate().toLocalDate() : null)
                 .totalCO2Saved(metrics.getTotalCO2Saved())
                 .totalCO2Footprint(metrics.getTotalCO2Footprint())
-                .totalOrders(customerOrders.size())
+                .totalOrders(metrics.getTotalEcoPoints() != null ? 0 : 0) // placeholder
                 .ecoPointsEarned(metrics.getTotalEcoPoints())
                 .totalAmountSpent(metrics.getTotalAmount())
                 .sustainableChoicesCount(metrics.getSustainableChoicesCount())
@@ -132,30 +107,30 @@ public class ImpactReportService {
         return impactReportRepository.getTotalEcoPointsByCustomer(customerId);
     }
 
-//    @Transactional
-//    public void deleteReport(Long reportId) {
-//        log.info("Soft deleting report with ID: {}", reportId);
-//
-//        ImpactReport report = impactReportRepository.findById(reportId)
-//                .orElseThrow(() -> new EntityNotFoundException("Report not found with ID: " + reportId));
-//
-//        report.setIsActive(false);
-//        impactReportRepository.save(report);
-//    }
+    @Transactional
+    public void deleteReport(Long reportId) {
+        log.info("Soft deleting report with ID: {}", reportId);
+
+        ImpactReport report = impactReportRepository.findById(reportId)
+                .orElseThrow(() -> new RuntimeException("Report not found with ID: " + reportId));
+
+        report.setIsActive(false);
+        impactReportRepository.save(report);
+    }
 
     // Métodos privados
     private void validateRequest(ImpactReportRequestDto request) {
         if (request.getStartDate().isAfter(request.getEndDate())) {
-            throw new InvalidDateRangeException("Start date must be before end date");
+            throw new RuntimeException("Start date must be before end date");
         }
 
         if (request.getStartDate().isAfter(LocalDateTime.now())) {
-            throw new InvalidDateRangeException("Start date cannot be in the future");
+            throw new RuntimeException("Start date cannot be in the future");
         }
 
         long daysBetween = ChronoUnit.DAYS.between(request.getStartDate(), request.getEndDate());
         if (daysBetween > 365) {
-            throw new InvalidDateRangeException("Date range cannot exceed 365 days");
+            throw new RuntimeException("Date range cannot exceed 365 days");
         }
     }
 
@@ -163,14 +138,12 @@ public class ImpactReportService {
         boolean exists = impactReportRepository.existsByCustomerAndPeriod(
                 request.getCustomerId(),
                 request.getReportType(),
-                request.getStartDate(),
-                request.getEndDate()
+                request.getStartDate() != null ? request.getStartDate().toLocalDate() : null,
+                request.getEndDate() != null ? request.getEndDate().toLocalDate() : null
         );
 
         if (exists) {
-            throw new ReportAlreadyExistsException(
-                    "A report already exists for this customer and period"
-            );
+            throw new RuntimeException("A report already exists for this customer and period");
         }
     }
 
@@ -180,8 +153,10 @@ public class ImpactReportService {
             List<OrderDto> orders,
             ImpactReportRequestDto request
     ) {
+        if (response == null || metrics == null) return;
+
         // Calcular promedio de CO2 por orden
-        if (response.getTotalOrders() > 0) {
+        if (response.getTotalOrders() != null && response.getTotalOrders() > 0) {
             BigDecimal avgCO2 = metrics.getTotalCO2Footprint()
                     .divide(BigDecimal.valueOf(response.getTotalOrders()), 3, RoundingMode.HALF_UP);
             response.setAverageOrderCO2(avgCO2);
@@ -199,29 +174,31 @@ public class ImpactReportService {
         response.setImpactLevel(calculationService.determineImpactLevel(ecoScore));
 
         // Calcular porcentaje de sostenibilidad
-        if (response.getTotalOrders() > 0) {
+        if (response.getTotalOrders() != null && response.getTotalOrders() > 0) {
             BigDecimal sustainabilityPercentage = BigDecimal.valueOf(response.getSustainableChoicesCount())
                     .divide(BigDecimal.valueOf(response.getTotalOrders()), 2, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
             response.setSustainabilityPercentage(sustainabilityPercentage);
         }
 
-        // Agregar datos adicionales si se solicitaron
-        if (request.getIncludeProductBreakdown()) {
+        // Agregar datos adicionales si se solicitaron (usar getters booleanos 'is...')
+        if (request.isIncludeProductBreakdown()) {
             response.setTopSustainableProducts(
                     calculationService.getTopSustainableProducts(orders)
             );
         }
 
-        if (request.getIncludeCategoryAnalysis()) {
+        if (request.isIncludeCategoryAnalysis()) {
             response.setCategoryImpactBreakdown(
                     calculationService.getCategoryImpactBreakdown(orders)
             );
         }
 
-        if (request.getIncludeMonthlyTrend()) {
+        if (request.isIncludeMonthlyTrend()) {
             response.setMonthlyTrend(
-                    calculationService.getMonthlyTrend(orders, request.getStartDate(), request.getEndDate())
+                    calculationService.getMonthlyTrend(orders,
+                            request.getStartDate() != null ? request.getStartDate().toLocalDate() : null,
+                            request.getEndDate() != null ? request.getEndDate().toLocalDate() : null)
             );
         }
 

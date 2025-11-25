@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -26,17 +27,17 @@ public interface ImpactReportRepository extends JpaRepository<ImpactReport, Long
     // Buscar el último reporte de un customer
     Optional<ImpactReport> findFirstByCustomerIdOrderByCreatedAtDesc(Long customerId);
 
-    // Buscar reportes por rango de fechas
+    // Buscar reportes por rango de fechas (startDate/endDate son LocalDate en la entidad)
     List<ImpactReport> findByCustomerIdAndStartDateBetween(
             Long customerId,
-            LocalDateTime start,
-            LocalDateTime end
+            LocalDate start,
+            LocalDate end
     );
 
     // Buscar reportes activos por customer
     List<ImpactReport> findByCustomerIdAndIsActiveTrueOrderByCreatedAtDesc(Long customerId);
 
-    // Buscar reportes por período específico
+    // Buscar reportes por período específico (usa LocalDate para start/end)
     @Query("SELECT ir FROM ImpactReport ir WHERE " +
             "ir.customerId = :customerId AND " +
             "ir.startDate >= :startDate AND " +
@@ -44,8 +45,8 @@ public interface ImpactReportRepository extends JpaRepository<ImpactReport, Long
             "ir.isActive = true")
     List<ImpactReport> findByCustomerAndPeriod(
             @Param("customerId") Long customerId,
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
     );
 
     // Query para obtener total de CO2 ahorrado por customer
@@ -58,19 +59,7 @@ public interface ImpactReportRepository extends JpaRepository<ImpactReport, Long
             "WHERE ir.customerId = :customerId AND ir.isActive = true")
     Integer getTotalEcoPointsByCustomer(@Param("customerId") Long customerId);
 
-    // Query para obtener estadísticas generales por customer
-//    @Query("SELECT NEW com.ecoshop.backend4.dto.projection.CustomerImpactStatsDto(" +
-//            "COALESCE(SUM(ir.totalCO2Saved), 0), " +
-//            "COALESCE(SUM(ir.totalCO2Footprint), 0), " +
-//            "COALESCE(SUM(ir.totalOrders), 0), " +
-//            "COALESCE(SUM(ir.ecoPointsEarned), 0), " +
-//            "COALESCE(SUM(ir.totalAmountSpent), 0), " +
-//            "COALESCE(SUM(ir.sustainableChoicesCount), 0)" +
-//            ") FROM ImpactReport ir " +
-//            "WHERE ir.customerId = :customerId AND ir.isActive = true")
-//    Optional<CustomerImpactStatsDto> getCustomerImpactStats(@Param("customerId") Long customerId);
-
-    // Query para reportes por rango de fechas con paginación
+    // Query para reportes por rango de fechas con paginación (createdAt es LocalDateTime)
     @Query("SELECT ir FROM ImpactReport ir WHERE " +
             "ir.createdAt >= :fromDate AND ir.createdAt <= :toDate AND ir.isActive = true")
     Page<ImpactReport> findReportsByPeriod(
@@ -93,7 +82,7 @@ public interface ImpactReportRepository extends JpaRepository<ImpactReport, Long
             "ORDER BY totalSaved DESC")
     List<Object[]> findTopEcoCustomers(Pageable pageable);
 
-    // Verificar si existe reporte para un período específico
+    // Verificar si existe reporte para un período específico (start/end LocalDate)
     @Query("SELECT COUNT(ir) > 0 FROM ImpactReport ir WHERE " +
             "ir.customerId = :customerId AND " +
             "ir.reportType = :reportType AND " +
@@ -103,7 +92,7 @@ public interface ImpactReportRepository extends JpaRepository<ImpactReport, Long
     boolean existsByCustomerAndPeriod(
             @Param("customerId") Long customerId,
             @Param("reportType") ReportType reportType,
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
     );
 }
