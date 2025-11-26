@@ -10,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.Customizer;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @RequiredArgsConstructor
@@ -36,6 +38,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml"
+                        ).permitAll()
                         .requestMatchers("/auth/register", "/auth/login").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/brand/**").hasRole("BRAND_ADMIN")
@@ -47,15 +55,16 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /** este bean está siendo creado para: 
-    ✅ Habilita CORS para todos los orígenes (allowedOrigins("*"))
-    ✅ Permite todos los métodos HTTP (GET, POST, PUT, DELETE, PATCH, OPTIONS)
-    ✅ Permite todos los headers
-    ✅ Aplica a todos los endpoints (/**)
-    ✅ Sin errores de compilación
-    **/
+    /**
+     * este bean está siendo creado para:
+     * ✅ Habilita CORS para todos los orígenes (allowedOrigins("*"))
+     * ✅ Permite todos los métodos HTTP (GET, POST, PUT, DELETE, PATCH, OPTIONS)
+     * ✅ Permite todos los headers
+     * ✅ Aplica a todos los endpoints (/**)
+     * ✅ Sin errores de compilación
+     **/
     @Bean
-    public WebMvcConfigurer corsConfigurer() { 
+    public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
@@ -68,5 +77,5 @@ public class SecurityConfig {
         };
     }
 
-    
+
 }
