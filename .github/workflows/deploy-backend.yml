@@ -1,0 +1,213 @@
+name: Deploy EcoHouse Backend to AWS
+          fi
+            echo "❌ Pipeline failed. Check the logs."
+          else
+            echo "✅ Pipeline completed successfully!"
+          if [ "${{ needs.deploy-production.result }}" == "success" ]; then
+        run: |
+      - name: 📊 Report Status
+    steps:
+
+    if: always()
+    needs: [test, build, deploy-production]
+    runs-on: ubuntu-latest
+    name: 📬 Notify
+  notify:
+
+          echo "Check the logs for details"
+          echo "❌ Deployment failed!"
+        run: |
+        if: failure()
+      - name: 📢 Notify deployment failure
+
+          echo "📊 Swagger: http://${{ env.EB_ENVIRONMENT_NAME }}.elasticbeanstalk.com/swagger-ui/index.html"
+          echo "🌐 URL: http://${{ env.EB_ENVIRONMENT_NAME }}.elasticbeanstalk.com"
+          echo "✅ Deployment successful!"
+        run: |
+        if: success()
+      - name: 📢 Notify deployment success
+
+          curl -f http://${{ env.EB_ENVIRONMENT_NAME }}.elasticbeanstalk.com/actuator/health || exit 1
+          sleep 30
+        run: |
+      - name: ✅ Verify deployment
+
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        env:
+          eb deploy --staged --timeout 20
+          eb use ${{ env.EB_ENVIRONMENT_NAME }}
+          eb init -p corretto-21 ${{ env.EB_APPLICATION_NAME }} --region ${{ env.AWS_REGION }}
+        run: |
+      - name: 🚀 Deploy to Elastic Beanstalk (Production)
+
+        run: pip install awsebcli
+      - name: 📦 Install EB CLI
+
+          python-version: '3.x'
+        with:
+        uses: actions/setup-python@v5
+      - name: 🐍 Setup Python
+
+          aws-region: ${{ env.AWS_REGION }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        with:
+        uses: aws-actions/configure-aws-credentials@v4
+      - name: 🔧 Configure AWS credentials
+
+          path: back/target
+          name: ecohouse-backend
+        with:
+        uses: actions/download-artifact@v4
+      - name: 📦 Download artifact
+
+        uses: actions/checkout@v4
+      - name: 📥 Checkout code
+    steps:
+
+        working-directory: ./back
+      run:
+    defaults:
+      url: http://${{ env.EB_ENVIRONMENT_NAME }}.elasticbeanstalk.com
+      name: production
+    environment:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    name: 🌟 Deploy to Production
+  deploy-production:
+
+          curl -f http://ecohouse-staging.elasticbeanstalk.com/actuator/health || exit 1
+          sleep 30
+        run: |
+      - name: ✅ Verify deployment
+
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        env:
+          eb deploy --staged --timeout 20
+          eb use ecohouse-staging
+          eb init -p corretto-21 ${{ env.EB_APPLICATION_NAME }} --region ${{ env.AWS_REGION }}
+        run: |
+      - name: 🚀 Deploy to Elastic Beanstalk (Staging)
+
+        run: pip install awsebcli
+      - name: 📦 Install EB CLI
+
+          python-version: '3.x'
+        with:
+        uses: actions/setup-python@v5
+      - name: 🐍 Setup Python
+
+          aws-region: ${{ env.AWS_REGION }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        with:
+        uses: aws-actions/configure-aws-credentials@v4
+      - name: 🔧 Configure AWS credentials
+
+          path: back/target
+          name: ecohouse-backend
+        with:
+        uses: actions/download-artifact@v4
+      - name: 📦 Download artifact
+
+        uses: actions/checkout@v4
+      - name: 📥 Checkout code
+    steps:
+
+        working-directory: ./back
+      run:
+    defaults:
+      url: http://ecohouse-staging.elasticbeanstalk.com
+      name: staging
+    environment:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    needs: build
+    runs-on: ubuntu-latest
+    name: 🚀 Deploy to Staging
+  deploy-staging:
+
+          retention-days: 1
+          path: back/target/*.jar
+          name: ecohouse-backend
+        with:
+        uses: actions/upload-artifact@v4
+      - name: 📦 Upload artifact
+
+        run: mvn clean package -DskipTests
+      - name: 🔨 Build with Maven
+
+          cache: 'maven'
+          distribution: 'corretto'
+          java-version: ${{ env.JAVA_VERSION }}
+        with:
+        uses: actions/setup-java@v4
+      - name: ☕ Set up JDK ${{ env.JAVA_VERSION }}
+
+        uses: actions/checkout@v4
+      - name: 📥 Checkout code
+    steps:
+
+        working-directory: ./back
+      run:
+    defaults:
+    needs: test
+    runs-on: ubuntu-latest
+    name: 🏗️ Build
+  build:
+
+          reporter: java-junit
+          path: back/target/surefire-reports/*.xml
+          name: Maven Tests
+        with:
+        uses: dorny/test-reporter@v1
+        if: always()
+      - name: 📊 Generate test report
+
+        run: mvn test
+      - name: 🔍 Run tests
+
+          cache: 'maven'
+          distribution: 'corretto'
+          java-version: ${{ env.JAVA_VERSION }}
+        with:
+        uses: actions/setup-java@v4
+      - name: ☕ Set up JDK ${{ env.JAVA_VERSION }}
+
+        uses: actions/checkout@v4
+      - name: 📥 Checkout code
+    steps:
+
+        working-directory: ./back
+      run:
+    defaults:
+    runs-on: ubuntu-latest
+    name: 🧪 Test
+  test:
+jobs:
+
+  JAVA_VERSION: '21'
+  EB_ENVIRONMENT_NAME: ecohouse-env
+  EB_APPLICATION_NAME: ecohouse-api
+  AWS_REGION: us-east-1
+env:
+
+  workflow_dispatch:  # Permite ejecutar manualmente
+      - 'back/**'
+    paths:
+      - develop
+      - main
+    branches:
+  pull_request:
+      - '.github/workflows/deploy-backend.yml'
+      - 'back/**'
+    paths:
+      - develop
+      - main
+    branches:
+  push:
+on:
+
+

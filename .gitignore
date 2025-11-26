@@ -32,3 +32,38 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### AWS ###
+.elasticbeanstalk/
+.aws/credentials
+.aws/config
+*.pem
+*.key
+
+### Logs ###
+logs/
+*.log
+*.log.*
+
+### Environment Variables ###
+.env
+.env.local
+.env.production
+*.env
+
+### Database ###
+*.sql.backup
+*.dump
+
+### Maven ###
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.properties
+
+### OS ###
+.DS_Store
+Thumbs.db
+
+### Sensitive Data ###
+secrets.yml
+application-secrets.properties
+*.secret
