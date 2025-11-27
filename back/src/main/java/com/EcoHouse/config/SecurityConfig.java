@@ -42,10 +42,11 @@ public class SecurityConfig {
                         .requestMatchers("/auth/register", "/auth/login").permitAll()
                         .requestMatchers("/api/**").permitAll() // Permitir acceso a todos los endpoints de API
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Swagger
+                        .requestMatchers("/actuator/**").permitAll() // Actuator sin autenticación
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/brand/**").hasRole("BRAND_ADMIN")
                         .requestMatchers("/user/**").hasAnyRole("CUSTOMER", "ADMIN")
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll() // Permitir acceso a todo temporalmente
                 )
                 .httpBasic(Customizer.withDefaults());
 

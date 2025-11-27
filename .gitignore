@@ -1,69 +1,83 @@
-HELP.md
+# Archivos de documentación y guías (ignorar)
+COMANDOS-PARA-ACTIVAR-CICD.txt
+push-commands.txt
+CI-CD-CHECKLIST-COMPLETO.md
+CONFIRMACION-FREE-TIER-100.md
+ACCESO-BASE-DATOS.md
+ACCESO-SIN-AUTH.md
+AHORA-SI-FUNCIONANDO.md
+ANALISIS-COSTOS-FREE-TIER.md
+BUILDFILE-FIX.md
+CURRENT-STATUS.md
+DEPLOYMENT-STATUS.md
+EXITO-AMBIENTE-DESPLEGADO.md
+FIX-PERMISSIONS.md
+PIPELINE-README.md
+QUICK-START.md
+REALIDAD-NO-SE-ESTABA-CREANDO.md
+RESUMEN-FINAL-COMPLETO.md
+SETUP-COMPLETE.md
+SOLUCION-SWAGGER-URL.md
+
+# Archivos de documentación en back/
+back/CICD-SETUP-GUIDE.md
+back/DATABASE-SETUP.md
+back/DEPLOY-READY.md
+
+# Scripts de gestión (mantener solo los necesarios)
+back/database-manager.ps1
+back/monitor-ambiente.ps1
+back/view-database.ps1
+back/eb-options.json
+
+# Java/Maven
 target/
-.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea/
-*/.idea/
-*.iws
-*.iml
-*.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
-.vscode/
-
-### AWS ###
-.elasticbeanstalk/
-.aws/credentials
-.aws/config
-*.pem
-*.key
-
-### Logs ###
-logs/
+*.class
+*.jar
+*.war
+*.ear
 *.log
-*.log.*
 
-### Environment Variables ###
-.env
-.env.local
-.env.production
-*.env
+# Elastic Beanstalk
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
 
-### Database ###
-*.sql.backup
-*.dump
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
 
-### Maven ###
-.mvn/timing.properties
-.mvn/wrapper/maven-wrapper.properties
-
-### OS ###
+# OS
 .DS_Store
 Thumbs.db
 
-### Sensitive Data ###
-secrets.yml
-application-secrets.properties
-*.secret
+# Secrets
+*.env
+.env.local
+application-local.properties
+*.pem
+*.key
+aws-credentials.txt
+
+# Logs
+logs/
+*.log
+
+# Temporary
+*.tmp
+*.bak
+*.swp
+*~
+*.original
+
+# Database
+*.sql.gz
+*.sql.bak
+

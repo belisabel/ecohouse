@@ -29,14 +29,11 @@ public class SwaggerConfig {
                 .info(apiInfo())
                 .servers(List.of(
                         new Server()
-                                .url("http://localhost:9000")
-                                .description("Servidor de desarrollo local"),
+                                .url("http://ecohouse-env.eba-vay8q3u6.us-east-1.elasticbeanstalk.com")
+                                .description("Servidor AWS Elastic Beanstalk (Producción)"),
                         new Server()
-                                .url("https://ecohouse-env.elasticbeanstalk.com")
-                                .description("Servidor de producción AWS Elastic Beanstalk (actualizar después del despliegue)"),
-                        new Server()
-                                .url("https://api.ecohouse.com")
-                                .description("Servidor de producción con dominio personalizado")
+                                .url("http://localhost:5000")
+                                .description("Servidor de desarrollo local")
                 ))
                 .components(new Components()
                         .addSecuritySchemes("basicAuth",

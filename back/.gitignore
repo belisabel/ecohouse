@@ -1,0 +1,58 @@
+# Java/Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+
+# Elastic Beanstalk
+.elasticbeanstalk/
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+.ebextensions/
+!.ebextensions/01_environment.config
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets y configuración local
+*.env
+.env.local
+application-local.properties
+*.pem
+*.key
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# AWS
+.aws/
+aws-credentials.txt
+
+# Build artifacts
+*.original
+
+# Database
+*.sql.gz
+*.sql.bak
+
