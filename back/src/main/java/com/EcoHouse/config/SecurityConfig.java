@@ -36,6 +36,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults())
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
@@ -50,7 +51,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/brand/**").hasRole("BRAND_ADMIN")
                         .requestMatchers("/user/**").hasAnyRole("CUSTOMER", "ADMIN")
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll() // Permitir acceso a todo temporalmente
                 )
                 .httpBasic(Customizer.withDefaults());
 
@@ -71,9 +72,10 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("*")
+                        .allowedOriginPatterns("*")  // Usar allowedOriginPatterns en lugar de allowedOrigins
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                         .allowedHeaders("*")
+                        .allowCredentials(true)  // Necesario para que funcione con Spring Security
                         .maxAge(3600);
             }
         };
