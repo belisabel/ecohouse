@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,6 +23,7 @@ public class AuthController {
     private final UserService userService;
     private final CustomerService customerService;
     private final BrandAdminService brandAdminService;
+    private final PasswordEncoder passwordEncoder;
 
 
 
@@ -41,23 +43,14 @@ public class AuthController {
         return ResponseEntity.ok(userService.toDto(user));
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<String> login(Authentication authentication) {
-        if (authentication != null && authentication.isAuthenticated()) {
-
-            String role = authentication.getAuthorities()
-                    .stream()
-                    .findFirst()
-                    .map(a -> a.getAuthority())
-                    .orElse("ROLE_CUSTOMER");
-
-            return ResponseEntity.ok("Inicio de sesión correcto: "
-                    + authentication.getName()
-                    + " (Rol: " + role + ")");
-        } else {
-            return ResponseEntity.status(401).body("No autenticado");
-        }
+    @PostMapping("/login")
+    public ResponseEntity<UserResponseDto> login(@RequestBody LoginRequest request) {
+        return userService.findByEmail(request.getEmail())
+                .filter(u -> passwordEncoder.matches(request.getPassword(), u.getPassword()))
+                .map(u -> ResponseEntity.ok(userService.toDto(u))) // devuelve usuario con rol
+                .orElse(ResponseEntity.status(401).build());
     }
+
 
 
 
