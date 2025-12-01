@@ -5,9 +5,10 @@ import lombok.Data;
 
 @Data
 @Builder
-public class AuthResponse {
+public class UserCurrentResponse {
 
-    private String token;
-
+    private String message;
     private UserResponseDto user;
+
+
 }

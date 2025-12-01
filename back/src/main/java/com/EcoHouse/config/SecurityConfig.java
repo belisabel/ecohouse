@@ -39,10 +39,15 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml"
+                        ).permitAll()
                         .requestMatchers("/auth/register", "/auth/login").permitAll()
-                        .requestMatchers("/api/**").permitAll() // Permitir acceso a todos los endpoints de API
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Swagger
-                        .requestMatchers("/actuator/**").permitAll() // Actuator sin autenticación
+                        .requestMatchers("/api/customers/**").permitAll()
+                        .requestMatchers("/api/customers/current").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/brand/**").hasRole("BRAND_ADMIN")
                         .requestMatchers("/user/**").hasAnyRole("CUSTOMER", "ADMIN")
@@ -54,13 +59,13 @@ public class SecurityConfig {
     }
 
     /**
-     * Configuración CORS para permitir solicitudes desde cualquier origen.
-     * ✅ Habilita CORS para todos los orígenes usando allowedOriginPatterns("*")
+     * este bean está siendo creado para:
+     * ✅ Habilita CORS para todos los orígenes (allowedOrigins("*"))
      * ✅ Permite todos los métodos HTTP (GET, POST, PUT, DELETE, PATCH, OPTIONS)
      * ✅ Permite todos los headers
-     * ✅ Permite credenciales (necesario para Spring Security)
      * ✅ Aplica a todos los endpoints (/**)
-     */
+     * ✅ Sin errores de compilación
+     **/
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -75,4 +80,6 @@ public class SecurityConfig {
             }
         };
     }
+
+
 }
