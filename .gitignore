@@ -1,3 +1,11 @@
+
+
+# Scripts de gestión (mantener solo los necesarios)
+back/database-manager.ps1
+back/monitor-ambiente.ps1
+back/view-database.ps1
+back/eb-options.json
+
 # Java/Maven
 target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -10,11 +18,9 @@ target/
 *.log
 
 # Elastic Beanstalk
-.elasticbeanstalk/
+.elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
-.ebextensions/
-!.ebextensions/01_environment.config
 
 # IDE
 .idea/
@@ -28,28 +34,23 @@ target/
 .DS_Store
 Thumbs.db
 
-# Secrets y configuración local
+# Secrets
 *.env
 .env.local
 application-local.properties
 *.pem
 *.key
+aws-credentials.txt
 
 # Logs
 logs/
 *.log
 
-# Temporary files
+# Temporary
 *.tmp
 *.bak
 *.swp
 *~
-
-# AWS
-.aws/
-aws-credentials.txt
-
-# Build artifacts
 *.original
 
 # Database
