@@ -1,9 +1,12 @@
 package com.EcoHouse.user.controller;
 
 
+import com.EcoHouse.user.dto.CustomerUpdateRequest;
 import com.EcoHouse.user.dto.UserCurrentResponse;
 import com.EcoHouse.user.dto.UserResponseDto;
 import com.EcoHouse.user.model.Customer;
+import com.EcoHouse.user.model.User;
+import com.EcoHouse.user.repository.UserRepository;
 import com.EcoHouse.user.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,10 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CustomerController {
 
     private final CustomerService customerService;
+    private final UserRepository userRepository;
 
     @Operation(summary = "Obtener todos los Customers(paginado")
     @GetMapping
@@ -61,8 +63,25 @@ public class CustomerController {
 
     @Operation(summary = "Obtener customer por email")
     @GetMapping("/by-email")
-    public Customer getByEmail(@RequestParam String email) {
-        return customerService.getCustomerByEmail(email);
+    public ResponseEntity<?> getByEmail(@RequestParam String email) {
+        try {
+            Customer customer = customerService.getCustomerByEmail(email);
+            return ResponseEntity.ok(customer);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+    @Operation(summary = "Actualizar datos del customer actual")
+    @PutMapping("/update")
+    public ResponseEntity<?> updateCustomer(@RequestBody CustomerUpdateRequest request) {
+        try {
+            Customer updated = customerService.updateCurrentCustomer(request);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 
