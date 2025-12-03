@@ -57,4 +57,15 @@ public class UserServiceImpl implements UserService  {
                 .userType(user.getUserType() != null ? user.getUserType().name() : null)
                 .build();
     }
+
+    @Override
+    public boolean emailExists(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public User getByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
+
 }

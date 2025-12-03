@@ -11,5 +11,7 @@ public interface UserService {
     User createUser(RegisterRequest request);
     Optional<User> findByEmail(String email);
     UserResponseDto toDto(User user);
+    boolean emailExists(String email);
+    User getByEmail(String email);
 
 }

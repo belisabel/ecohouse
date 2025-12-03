@@ -46,8 +46,10 @@ public class SecurityConfig {
                                 "/v3/api-docs.yaml"
                         ).permitAll()
                         .requestMatchers("/auth/register", "/auth/login").permitAll()
-                        .requestMatchers("/api/customers/**").permitAll()
-                        .requestMatchers("/api/customers/current").authenticated()
+                        .requestMatchers("/api/customers/current", "/api/customers/update")
+                        .authenticated()
+                        .requestMatchers("/api/customers/by-email", "/api/customers")
+                        .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/brand/**").hasRole("BRAND_ADMIN")
                         .requestMatchers("/user/**").hasAnyRole("CUSTOMER", "ADMIN")

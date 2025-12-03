@@ -1,5 +1,6 @@
 package com.EcoHouse.user.service;
 
+import com.EcoHouse.user.dto.CustomerUpdateRequest;
 import com.EcoHouse.user.model.Customer;
 import com.EcoHouse.user.model.User;
 import org.springframework.data.domain.Page;
@@ -16,4 +17,8 @@ public interface CustomerService {
     Customer getCustomerByEmail(String email);
 
     Customer getCurrentCustomer();
+
+    Customer updateCurrentCustomer(CustomerUpdateRequest request);
+
+
 }
