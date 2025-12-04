@@ -32,7 +32,7 @@ public class SwaggerConfig {
                                 .url("http://ecohouse-env.eba-vay8q3u6.us-east-1.elasticbeanstalk.com")
                                 .description("Servidor AWS Elastic Beanstalk (Producción)"),
                         new Server()
-                                .url("http://localhost:5000")
+                                .url("http://localhost:9000")
                                 .description("Servidor de desarrollo local")
                 ))
                 .components(new Components()
