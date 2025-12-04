@@ -78,7 +78,8 @@ public class SecurityConfig {
                         .allowedOriginPatterns("*")  // Usar allowedOriginPatterns en lugar de allowedOrigins
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(true)  // Necesario para que funcione con Spring Security
+                        .allowedOrigins("*")
+                        .allowCredentials(false)  // Necesario para que funcione con Spring Security, para test en false
                         .maxAge(3600);
             }
         };

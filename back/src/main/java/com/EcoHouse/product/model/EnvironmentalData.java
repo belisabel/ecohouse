@@ -18,6 +18,10 @@ public class EnvironmentalData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** Relación bidireccional con Product (un EnvironmentalData pertenece a un Product) */
+    @OneToOne(mappedBy = "environmentalData")
+    private Product product;
+
     /** Huella de carbono total del producto en kg de CO₂e */
     @Column(precision = 10, scale = 2)
     private BigDecimal carbonFootprint;
