@@ -4,13 +4,16 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "customers")
+@PrimaryKeyJoinColumn(name = "id")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 public class Customer extends User {
 

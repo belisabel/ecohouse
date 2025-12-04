@@ -1,7 +1,9 @@
 package com.EcoHouse.product.controller;
 
-import com.EcoHouse.product.dto.ProductDTO;
+import com.EcoHouse.product.dto.ProductResponse;
+import com.EcoHouse.product.dto.ProductRequest;
 import com.EcoHouse.product.mapper.ProductMapper;
+import com.EcoHouse.product.mapper.EnvironmentalDataMapper;
 import com.EcoHouse.product.model.Product;
 import com.EcoHouse.product.services.ProductServiceImpl;
 
@@ -23,29 +25,27 @@ public class ProductController {
 
     private final ProductServiceImpl productService;
 
-    // ---------------------------------------------------------------------
-    // CREATE
-    // ---------------------------------------------------------------------
     @PostMapping
-    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) {
-        Product entity = ProductMapper.toEntity(productDTO);
+    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest request) {
+        Product entity = ProductMapper.toEntity(request);
+
+        if (request.getEnvironmentalData() != null) {
+            entity.setEnvironmentalData(EnvironmentalDataMapper.toEntity(request.getEnvironmentalData()));
+        }
 
         Product saved = productService.createProduct(
                 entity,
-                productDTO.getCategoryId(),
-                productDTO.getBrandId(),
-                productDTO.getCertificationIds()
+                request.getCategoryId(),
+                request.getBrandId(),
+                request.getCertificationIds()
         );
 
         return ResponseEntity.ok(ProductMapper.toDTO(saved));
     }
 
-    // ---------------------------------------------------------------------
-    // READ ALL
-    // ---------------------------------------------------------------------
     @GetMapping
-    public ResponseEntity<List<ProductDTO>> getAllProducts() {
-        List<ProductDTO> products = productService.getAllProducts()
+    public ResponseEntity<List<ProductResponse>> getAllProducts() {
+        List<ProductResponse> products = productService.getAllProducts()
                 .stream()
                 .map(ProductMapper::toDTO)
                 .toList();
@@ -53,39 +53,34 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
-    // ---------------------------------------------------------------------
-    // READ ONE
-    // ---------------------------------------------------------------------
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
         Product found = productService.getProductById(id);
         return ResponseEntity.ok(ProductMapper.toDTO(found));
     }
 
-    // ---------------------------------------------------------------------
-    // UPDATE
-    // ---------------------------------------------------------------------
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
-        Product entity = ProductMapper.toEntity(productDTO);
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @RequestBody ProductRequest request) {
+        Product entity = ProductMapper.toEntity(request);
+
+        if (request.getEnvironmentalData() != null) {
+            entity.setEnvironmentalData(EnvironmentalDataMapper.toEntity(request.getEnvironmentalData()));
+        }
 
         Product updated = productService.updateProduct(
                 id,
                 entity,
-                productDTO.getCategoryId(),
-                productDTO.getBrandId(),
-                productDTO.getCertificationIds()
+                request.getCategoryId(),
+                request.getBrandId(),
+                request.getCertificationIds()
         );
 
         return ResponseEntity.ok(ProductMapper.toDTO(updated));
     }
 
-    // ---------------------------------------------------------------------
-    // READ BY BRAND
-    // ---------------------------------------------------------------------
     @GetMapping("/brand/{brandId}")
-    public ResponseEntity<List<ProductDTO>> getByBrand(@PathVariable Long brandId) {
-        List<ProductDTO> list = productService.getProductsByBrand(brandId)
+    public ResponseEntity<List<ProductResponse>> getByBrand(@PathVariable Long brandId) {
+        List<ProductResponse> list = productService.getProductsByBrand(brandId)
                 .stream()
                 .map(ProductMapper::toDTO)
                 .toList();
@@ -93,9 +88,6 @@ public class ProductController {
         return ResponseEntity.ok(list);
     }
 
-    // ---------------------------------------------------------------------
-    // DELETE
-    // ---------------------------------------------------------------------
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);

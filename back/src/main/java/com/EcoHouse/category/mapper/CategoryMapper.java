@@ -1,6 +1,6 @@
 package com.EcoHouse.category.mapper;
 
-import com.EcoHouse.category.dto.CategoryDTO;
+import com.EcoHouse.category.dto.CategoryResponse;
 import com.EcoHouse.category.dto.CategoryRequest;
 import com.EcoHouse.category.model.Category;
 
@@ -9,30 +9,20 @@ import java.util.stream.Collectors;
 
 public class CategoryMapper {
 
-    public static CategoryDTO toDTO(Category category) {
+    public static CategoryResponse toDTO(Category category) {
         if (category == null) return null;
 
-        CategoryDTO dto = new CategoryDTO();
-        dto.setId(category.getId());
-        dto.setName(category.getName());
-        dto.setDescription(category.getDescription());
-        dto.setIconUrl(category.getIconUrl());
-
-        if (category.getParentCategory() != null) {
-            dto.setParentCategoryId(category.getParentCategory().getId());
-        }
-
-        // Subcategorías (recursivo)
-        if (category.getSubCategories() != null) {
-            dto.setSubCategories(
-                    category.getSubCategories()
-                            .stream()
-                            .map(CategoryMapper::toDTO)
-                            .collect(Collectors.toList())
-            );
-        }
-
-        return dto;
+        return CategoryResponse.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .description(category.getDescription())
+                .iconUrl(category.getIconUrl())
+                .parentCategoryId(category.getParentCategory() != null ? category.getParentCategory().getId() : null)
+                .subCategories(category.getSubCategories() != null ?
+                    category.getSubCategories().stream()
+                        .map(CategoryMapper::toDTO)
+                        .collect(Collectors.toList()) : null)
+                .build();
     }
 
     public static Category toEntity(CategoryRequest request, Category parentCategory) {

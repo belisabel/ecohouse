@@ -1,7 +1,8 @@
 package com.EcoHouse.user.controller;
 
 
-import com.EcoHouse.user.dto.CustomerDTO;
+import com.EcoHouse.user.dto.CustomerRequest;
+import com.EcoHouse.user.dto.CustomerResponse;
 import com.EcoHouse.user.dto.CustomerUpdateRequest;
 import com.EcoHouse.user.dto.UserCurrentResponse;
 import com.EcoHouse.user.dto.UserResponseDto;
@@ -91,26 +92,26 @@ public class CustomerController {
 
     @Operation(summary = "Crear un nuevo customer")
     @PostMapping
-    public ResponseEntity<CustomerDTO> create(@RequestBody CustomerDTO dto) {
-        return ResponseEntity.ok(customerService.createCustomer(dto));
+    public ResponseEntity<CustomerResponse> create(@RequestBody CustomerRequest request) {
+        return ResponseEntity.ok(customerService.createCustomer(request));
     }
 
     @Operation(summary = "Obtener customer por ID")
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<CustomerResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(customerService.getCustomerById(id));
     }
 
     @Operation(summary = "Obtener todos los customers (lista)")
     @GetMapping("/list")
-    public ResponseEntity<List<CustomerDTO>> getAll() {
+    public ResponseEntity<List<CustomerResponse>> getAll() {
         return ResponseEntity.ok(customerService.getAllCustomers());
     }
 
     @Operation(summary = "Actualizar customer por ID")
     @PutMapping("/{id}")
-    public ResponseEntity<CustomerDTO> update(@PathVariable Long id, @RequestBody CustomerDTO dto) {
-        return ResponseEntity.ok(customerService.updateCustomer(id, dto));
+    public ResponseEntity<CustomerResponse> update(@PathVariable Long id, @RequestBody CustomerRequest request) {
+        return ResponseEntity.ok(customerService.updateCustomer(id, request));
     }
 
     @Operation(summary = "Eliminar customer por ID")
@@ -122,7 +123,7 @@ public class CustomerController {
 
     @Operation(summary = "Obtener customer por email (DTO)")
     @GetMapping("/email/{email}")
-    public ResponseEntity<CustomerDTO> getByEmailDTO(@PathVariable String email) {
+    public ResponseEntity<CustomerResponse> getByEmailDTO(@PathVariable String email) {
         return ResponseEntity.ok(customerService.getCustomerByEmail(email, true));
     }
 

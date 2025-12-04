@@ -1,6 +1,6 @@
 package com.EcoHouse.category.controller;
 
-import com.EcoHouse.category.dto.CategoryDTO;
+import com.EcoHouse.category.dto.CategoryResponse;
 import com.EcoHouse.category.dto.CategoryRequest;
 import com.EcoHouse.category.mapper.CategoryMapper;
 import com.EcoHouse.category.model.Category;
@@ -21,9 +21,8 @@ public class CategoryController {
     @Autowired
     private CategoryServiceImpl categoryService;
 
-    // Crear categoría
     @PostMapping
-    public ResponseEntity<CategoryDTO> createCategory(@RequestBody CategoryRequest request) {
+    public ResponseEntity<CategoryResponse> createCategory(@RequestBody CategoryRequest request) {
         Category parent = null;
 
         if (request.getParentCategoryId() != null) {
@@ -36,10 +35,9 @@ public class CategoryController {
         return ResponseEntity.ok(CategoryMapper.toDTO(saved));
     }
 
-    // Obtener todas las categorías
     @GetMapping
-    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
-        List<CategoryDTO> list = categoryService.getAllCategories()
+    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
+        List<CategoryResponse> list = categoryService.getAllCategories()
                 .stream()
                 .map(CategoryMapper::toDTO)
                 .collect(Collectors.toList());
@@ -47,16 +45,14 @@ public class CategoryController {
         return ResponseEntity.ok(list);
     }
 
-    // Obtener categoría por ID
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Long id) {
+    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long id) {
         Category category = categoryService.getCategoryById(id);
         return ResponseEntity.ok(CategoryMapper.toDTO(category));
     }
 
-    // Actualizar categoría
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryDTO> updateCategory(
+    public ResponseEntity<CategoryResponse> updateCategory(
             @PathVariable Long id,
             @RequestBody CategoryRequest request) {
 
@@ -72,17 +68,15 @@ public class CategoryController {
         return ResponseEntity.ok(CategoryMapper.toDTO(updatedEntity));
     }
 
-    // Eliminar categoría
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
 
-    // Obtener categorías raíz
     @GetMapping("/root")
-    public ResponseEntity<List<CategoryDTO>> getRootCategories() {
-        List<CategoryDTO> list = categoryService.getRootCategories()
+    public ResponseEntity<List<CategoryResponse>> getRootCategories() {
+        List<CategoryResponse> list = categoryService.getRootCategories()
                 .stream()
                 .map(CategoryMapper::toDTO)
                 .collect(Collectors.toList());
@@ -90,10 +84,9 @@ public class CategoryController {
         return ResponseEntity.ok(list);
     }
 
-    // Obtener subcategorías de un padre
     @GetMapping("/sub/{parentId}")
-    public ResponseEntity<List<CategoryDTO>> getSubCategories(@PathVariable Long parentId) {
-        List<CategoryDTO> list = categoryService.getSubCategories(parentId)
+    public ResponseEntity<List<CategoryResponse>> getSubCategories(@PathVariable Long parentId) {
+        List<CategoryResponse> list = categoryService.getSubCategories(parentId)
                 .stream()
                 .map(CategoryMapper::toDTO)
                 .collect(Collectors.toList());

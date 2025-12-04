@@ -1,14 +1,15 @@
 package com.EcoHouse.product.mapper;
 
-import com.EcoHouse.product.dto.EnvironmentalDataDTO;
+import com.EcoHouse.product.dto.EnvironmentalDataResponse;
+import com.EcoHouse.product.dto.EnvironmentalDataRequest;
 import com.EcoHouse.product.model.EnvironmentalData;
 
 public class EnvironmentalDataMapper {
 
-    public static EnvironmentalDataDTO toDTO(EnvironmentalData data) {
+    public static EnvironmentalDataResponse toDTO(EnvironmentalData data) {
         if (data == null) return null;
 
-        return EnvironmentalDataDTO.builder()
+        return EnvironmentalDataResponse.builder()
                 .id(data.getId())
                 .carbonFootprint(data.getCarbonFootprint())
                 .material(data.getMaterial())
@@ -20,18 +21,16 @@ public class EnvironmentalDataMapper {
                 .build();
     }
 
-    public static EnvironmentalData toEntity(EnvironmentalDataDTO dto) {
-        if (dto == null) return null;
+    public static EnvironmentalData toEntity(EnvironmentalDataRequest request) {
+        if (request == null) return null;
 
         EnvironmentalData data = new EnvironmentalData();
-        data.setId(dto.getId());
-        data.setCarbonFootprint(dto.getCarbonFootprint());
-        data.setMaterial(dto.getMaterial());
-        data.setCountryOfOrigin(dto.getCountryOfOrigin());
-        data.setEnergyConsumption(dto.getEnergyConsumption());
-        data.setRecyclablePercentage(dto.getRecyclablePercentage());
-        data.setNotes(dto.getNotes());
-        data.setCreatedAt(dto.getCreatedAt());
+        data.setCarbonFootprint(request.getCarbonFootprint());
+        data.setMaterial(request.getMaterial());
+        data.setCountryOfOrigin(request.getCountryOfOrigin());
+        data.setEnergyConsumption(request.getEnergyConsumption());
+        data.setRecyclablePercentage(request.getRecyclablePercentage());
+        data.setNotes(request.getNotes());
         return data;
     }
 }

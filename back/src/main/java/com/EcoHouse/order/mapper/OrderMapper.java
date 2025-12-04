@@ -1,18 +1,19 @@
 package com.EcoHouse.order.mapper;
 
-import com.EcoHouse.order.dto.OrderDTO;
+import com.EcoHouse.order.dto.OrderResponse;
+import com.EcoHouse.order.dto.OrderRequest;
 import com.EcoHouse.order.model.Order;
 
 import java.util.stream.Collectors;
 
 public class OrderMapper {
 
-    public static OrderDTO toDTO(Order order) {
+    public static OrderResponse toDTO(Order order) {
         if (order == null) {
             return null;
         }
 
-        return OrderDTO.builder()
+        return OrderResponse.builder()
                 .id(order.getId())
                 .customerId(order.getCustomer() != null ? order.getCustomer().getId() : null)
                 .orderNumber(order.getOrderNumber())
@@ -32,24 +33,15 @@ public class OrderMapper {
                 .build();
     }
 
-    public static Order toEntity(OrderDTO dto) {
-        if (dto == null) {
+    public static Order toEntity(OrderRequest request) {
+        if (request == null) {
             return null;
         }
 
         Order order = new Order();
-        order.setId(dto.getId());
-        order.setOrderNumber(dto.getOrderNumber());
-        order.setTotalAmount(dto.getTotalAmount());
-        order.setTotalCarbonFootprint(dto.getTotalCarbonFootprint());
-        order.setCo2Saved(dto.getCo2Saved());
-        order.setStatus(dto.getStatus());
-        order.setShippingAddress(ShippingAddressMapper.toEntity(dto.getShippingAddress()));
-        order.setPayment(PaymentMapper.toEntity(dto.getPayment()));
-        order.setOrderDate(dto.getOrderDate());
-        order.setShippingDate(dto.getShippingDate());
-        order.setDeliveryDate(dto.getDeliveryDate());
-        order.setEcoPointsEarned(dto.getEcoPointsEarned());
+        order.setShippingAddress(ShippingAddressMapper.toEntity(request.getShippingAddress()));
+        order.setPayment(PaymentMapper.toEntity(request.getPayment()));
+        // Los demás campos se setean en el service
 
         return order;
     }

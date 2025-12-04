@@ -1,6 +1,7 @@
 package com.EcoHouse.user.service.impl;
 
-import com.EcoHouse.user.dto.CustomerDTO;
+import com.EcoHouse.user.dto.CustomerRequest;
+import com.EcoHouse.user.dto.CustomerResponse;
 import com.EcoHouse.user.dto.CustomerUpdateRequest;
 import com.EcoHouse.user.model.Customer;
 import com.EcoHouse.user.model.User;
@@ -26,7 +27,12 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer createCustomer(User user) {
-        // Crear un Customer copiando los datos del User
+        // Validar que el email no exista
+        if (customerRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new RuntimeException("Ya existe un usuario con el email: " + user.getEmail());
+        }
+
+        // Con JOINED inheritance, crear Customer directamente guarda en ambas tablas
         Customer customer = new Customer();
         customer.setEmail(user.getEmail());
         customer.setPassword(user.getPassword());
@@ -35,6 +41,9 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setUserType(user.getUserType());
         customer.setCreatedAt(user.getCreatedAt());
         customer.setUpdatedAt(user.getUpdatedAt());
+        customer.setIsActive(true);
+
+        // JPA automáticamente guardará en users Y customers con el mismo ID
         return customerRepository.save(customer);
     }
 
@@ -99,48 +108,57 @@ public class CustomerServiceImpl implements CustomerService {
     // ========== Nuevos métodos CRUD con DTO ==========
 
     @Override
-    public CustomerDTO createCustomer(CustomerDTO dto) {
+    public CustomerResponse createCustomer(CustomerRequest request) {
+        // Validar que el email no exista
+        if (customerRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Ya existe un usuario con el email: " + request.getEmail());
+        }
+
         Customer customer = new Customer();
-        customer.setEmail(dto.getEmail());
-        customer.setFirstName(dto.getFirstName());
-        customer.setLastName(dto.getLastName());
-        customer.setShippingAddress(dto.getShippingAddress());
-        customer.setBillingAddress(dto.getBillingAddress());
-        customer.setPhone(dto.getPhone());
-        customer.setCarbonFootprint(dto.getCarbonFootprint());
+        customer.setEmail(request.getEmail());
+        customer.setFirstName(request.getFirstName());
+        customer.setLastName(request.getLastName());
+        customer.setShippingAddress(request.getShippingAddress());
+        customer.setBillingAddress(request.getBillingAddress());
+        customer.setPhone(request.getPhone());
+        customer.setCarbonFootprint(request.getCarbonFootprint());
+        customer.setPassword("TEMP_PASSWORD"); // TODO: Debería venir encriptado
+        customer.setUserType(com.EcoHouse.user.model.UserType.CUSTOMER);
+        customer.setIsActive(true);
         customer.setCreatedAt(java.time.LocalDateTime.now());
         customer.setUpdatedAt(java.time.LocalDateTime.now());
 
+        // JPA guardará automáticamente en users Y customers con el mismo ID
         Customer saved = customerRepository.save(customer);
         return toDTO(saved);
     }
 
     @Override
-    public CustomerDTO getCustomerById(Long id) {
+    public CustomerResponse getCustomerById(Long id) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Customer no encontrado con id: " + id));
         return toDTO(customer);
     }
 
     @Override
-    public List<CustomerDTO> getAllCustomers() {
+    public List<CustomerResponse> getAllCustomers() {
         return customerRepository.findAll().stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public CustomerDTO updateCustomer(Long id, CustomerDTO dto) {
+    public CustomerResponse updateCustomer(Long id, CustomerRequest request) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Customer no encontrado con id: " + id));
 
-        if (dto.getFirstName() != null) customer.setFirstName(dto.getFirstName());
-        if (dto.getLastName() != null) customer.setLastName(dto.getLastName());
-        if (dto.getEmail() != null) customer.setEmail(dto.getEmail());
-        if (dto.getShippingAddress() != null) customer.setShippingAddress(dto.getShippingAddress());
-        if (dto.getBillingAddress() != null) customer.setBillingAddress(dto.getBillingAddress());
-        if (dto.getPhone() != null) customer.setPhone(dto.getPhone());
-        if (dto.getCarbonFootprint() != null) customer.setCarbonFootprint(dto.getCarbonFootprint());
+        if (request.getFirstName() != null) customer.setFirstName(request.getFirstName());
+        if (request.getLastName() != null) customer.setLastName(request.getLastName());
+        if (request.getEmail() != null) customer.setEmail(request.getEmail());
+        if (request.getShippingAddress() != null) customer.setShippingAddress(request.getShippingAddress());
+        if (request.getBillingAddress() != null) customer.setBillingAddress(request.getBillingAddress());
+        if (request.getPhone() != null) customer.setPhone(request.getPhone());
+        if (request.getCarbonFootprint() != null) customer.setCarbonFootprint(request.getCarbonFootprint());
 
         customer.setUpdatedAt(java.time.LocalDateTime.now());
         Customer updated = customerRepository.save(customer);
@@ -156,14 +174,14 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerDTO getCustomerByEmail(String email, boolean returnDTO) {
+    public CustomerResponse getCustomerByEmail(String email, boolean returnDTO) {
         Customer customer = getCustomerByEmail(email);
         return toDTO(customer);
     }
 
-    // Método helper para convertir Customer a CustomerDTO
-    private CustomerDTO toDTO(Customer customer) {
-        return CustomerDTO.builder()
+    // Método helper para convertir Customer a CustomerResponse
+    private CustomerResponse toDTO(Customer customer) {
+        return CustomerResponse.builder()
                 .id(customer.getId())
                 .email(customer.getEmail())
                 .firstName(customer.getFirstName())

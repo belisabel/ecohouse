@@ -2,21 +2,21 @@ package com.EcoHouse.product.dto;
 
 import lombok.*;
 import java.math.BigDecimal;
-import java.util.Date;
 
+/**
+ * DTO de request para EnvironmentalData - sin id ni timestamps (para POST)
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class EnvironmentalDataDTO {
-
-    private Long id;
+public class EnvironmentalDataRequest {
     private BigDecimal carbonFootprint;
     private String material;
     private String countryOfOrigin;
     private BigDecimal energyConsumption;
     private BigDecimal recyclablePercentage;
     private String notes;
-    private Date createdAt;
 }
+

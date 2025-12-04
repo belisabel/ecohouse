@@ -1,14 +1,15 @@
 package com.EcoHouse.product.mapper;
 
-import com.EcoHouse.product.dto.CertificationDTO;
+import com.EcoHouse.product.dto.CertificationResponse;
+import com.EcoHouse.product.dto.CertificationRequest;
 import com.EcoHouse.product.model.Certification;
 
 public class CertificationMapper {
 
-    public static CertificationDTO toDTO(Certification cert) {
+    public static CertificationResponse toDTO(Certification cert) {
         if (cert == null) return null;
 
-        return CertificationDTO.builder()
+        return CertificationResponse.builder()
                 .id(cert.getId())
                 .name(cert.getName())
                 .description(cert.getDescription())
@@ -17,15 +18,14 @@ public class CertificationMapper {
                 .build();
     }
 
-    public static Certification toEntity(CertificationDTO dto) {
-        if (dto == null) return null;
+    public static Certification toEntity(CertificationRequest request) {
+        if (request == null) return null;
 
         Certification cert = new Certification();
-        cert.setId(dto.getId());
-        cert.setName(dto.getName());
-        cert.setDescription(dto.getDescription());
-        cert.setIssuedBy(dto.getOrganization());
-        cert.setWebsite(dto.getCertificationUrl());
+        cert.setName(request.getName());
+        cert.setDescription(request.getDescription());
+        cert.setIssuedBy(request.getOrganization());
+        cert.setWebsite(request.getCertificationUrl());
 
         return cert;
     }

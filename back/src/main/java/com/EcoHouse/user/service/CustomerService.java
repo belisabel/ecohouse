@@ -1,6 +1,7 @@
 package com.EcoHouse.user.service;
 
-import com.EcoHouse.user.dto.CustomerDTO;
+import com.EcoHouse.user.dto.CustomerRequest;
+import com.EcoHouse.user.dto.CustomerResponse;
 import com.EcoHouse.user.dto.CustomerUpdateRequest;
 import com.EcoHouse.user.model.Customer;
 import com.EcoHouse.user.model.User;
@@ -23,10 +24,10 @@ public interface CustomerService {
     Customer updateCurrentCustomer(CustomerUpdateRequest request);
 
     // Nuevos métodos CRUD con DTO
-    CustomerDTO createCustomer(CustomerDTO dto);
-    CustomerDTO getCustomerById(Long id);
-    List<CustomerDTO> getAllCustomers();
-    CustomerDTO updateCustomer(Long id, CustomerDTO dto);
+    CustomerResponse createCustomer(CustomerRequest request);
+    CustomerResponse getCustomerById(Long id);
+    List<CustomerResponse> getAllCustomers();
+    CustomerResponse updateCustomer(Long id, CustomerRequest request);
     void deleteCustomer(Long id);
-    CustomerDTO getCustomerByEmail(String email, boolean returnDTO);
+    CustomerResponse getCustomerByEmail(String email, boolean returnDTO);
 }

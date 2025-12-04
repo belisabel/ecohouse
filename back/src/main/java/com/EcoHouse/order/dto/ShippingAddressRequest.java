@@ -1,17 +1,16 @@
 package com.EcoHouse.order.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+/**
+ * DTO de request para ShippingAddress - para POST (no tiene id propio, es embedded)
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ShippingAddressDTO {
+public class ShippingAddressRequest {
     private String street;
     private String number;
     private String city;
@@ -19,3 +18,4 @@ public class ShippingAddressDTO {
     private String country;
     private String zipCode;
 }
+

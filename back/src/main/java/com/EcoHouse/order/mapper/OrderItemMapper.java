@@ -1,18 +1,18 @@
 package com.EcoHouse.order.mapper;
 
-import com.EcoHouse.order.dto.OrderItemDTO;
+import com.EcoHouse.order.dto.OrderItemResponse;
+import com.EcoHouse.order.dto.OrderItemRequest;
 import com.EcoHouse.order.model.OrderItem;
 import com.EcoHouse.product.model.Product;
 
 public class OrderItemMapper {
 
-    // ---- ENTITY -> DTO ----
-    public static OrderItemDTO toDTO(OrderItem item) {
+    public static OrderItemResponse toDTO(OrderItem item) {
         if (item == null) {
             return null;
         }
 
-        return OrderItemDTO.builder()
+        return OrderItemResponse.builder()
                 .id(item.getId())
                 .productId(item.getProduct() != null ? item.getProduct().getId() : null)
                 .productName(item.getProduct() != null ? item.getProduct().getName() : null)
@@ -23,21 +23,15 @@ public class OrderItemMapper {
                 .build();
     }
 
-    // ---- DTO -> ENTITY ----
-    // ⚠ El Product se pasa desde el servicio, porque el DTO no tiene el Product completo
-    public static OrderItem toEntity(OrderItemDTO dto, Product product) {
-        if (dto == null) {
+    public static OrderItem toEntity(OrderItemRequest request, Product product) {
+        if (request == null) {
             return null;
         }
 
         OrderItem item = new OrderItem();
-        item.setId(dto.getId());
         item.setProduct(product);
-        item.setQuantity(dto.getQuantity());
-        item.setUnitPrice(dto.getUnitPrice());
-        item.setSubtotal(dto.getTotalPrice());
-        item.setItemCarbonFootprint(dto.getCarbonFootprint());
-
+        item.setQuantity(request.getQuantity());
+        // unitPrice, totalPrice y carbonFootprint se calculan en el service
         return item;
     }
 }

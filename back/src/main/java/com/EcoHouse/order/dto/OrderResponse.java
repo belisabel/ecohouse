@@ -8,37 +8,27 @@ import com.EcoHouse.order.model.OrderStatus;
 
 import lombok.*;
 
+/**
+ * DTO de respuesta para Order - incluye id y timestamps autogenerados
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderDTO {
-
+public class OrderResponse {
     private Long id;
-
     private Long customerId;
-
     private String orderNumber;
-
-    private List<OrderItemDTO> items;
-
+    private List<OrderItemResponse> items;
     private BigDecimal totalAmount;
-
     private BigDecimal totalCarbonFootprint;
-
     private BigDecimal co2Saved;
-
     private OrderStatus status;
-
-    private ShippingAddressDTO shippingAddress;
-
-    private PaymentDTO payment;
-
+    private ShippingAddressResponse shippingAddress;
+    private PaymentResponse payment;
     private Date orderDate;
-
     private Date shippingDate;
-
     private Date deliveryDate;
 
     private Integer ecoPointsEarned;
