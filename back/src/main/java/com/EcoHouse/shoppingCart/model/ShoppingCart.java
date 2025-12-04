@@ -1,6 +1,6 @@
 package com.EcoHouse.shoppingCart.model;
 
-import com.EcoHouse.customer.model.Customer;
+import com.EcoHouse.user.model.Customer;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,5 +1,6 @@
 package com.EcoHouse.user.service.impl;
 
+import com.EcoHouse.user.dto.CustomerDTO;
 import com.EcoHouse.user.dto.CustomerUpdateRequest;
 import com.EcoHouse.user.model.Customer;
 import com.EcoHouse.user.model.User;
@@ -12,6 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
@@ -22,14 +26,22 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer createCustomer(User user) {
+        // Crear un Customer copiando los datos del User
         Customer customer = new Customer();
-        customer.setUser(user);
+        customer.setEmail(user.getEmail());
+        customer.setPassword(user.getPassword());
+        customer.setFirstName(user.getFirstName());
+        customer.setLastName(user.getLastName());
+        customer.setUserType(user.getUserType());
+        customer.setCreatedAt(user.getCreatedAt());
+        customer.setUpdatedAt(user.getUpdatedAt());
         return customerRepository.save(customer);
     }
 
     @Override
     public Customer findByUserId(Long userId) {
-        return customerRepository.findByUser_Id(userId).orElse(null);
+        // Customer extiende de User, por lo tanto el userId es el id del Customer
+        return customerRepository.findById(userId).orElse(null);
     }
 
     @Override
@@ -39,18 +51,10 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer getCustomerByEmail(String email) {
-
-        // 1. Buscar usuario por email
-        User user = userRepository.findByEmail(email)
+        // Buscar Customer directamente por email (Customer extiende de User)
+        return customerRepository.findByEmail(email)
                 .orElseThrow(() ->
-                        new RuntimeException("No existe un usuario con el email: " + email)
-                );
-
-        // 2. Revisar si ese usuario está registrado como Customer
-        return customerRepository.findByUser_Email(email)
-                .orElseThrow(() ->
-                        new RuntimeException("El usuario con email " + email +
-                                " NO es un customer. Su rol actual es: " + user.getUserType())
+                        new RuntimeException("No existe un Customer con el email: " + email)
                 );
     }
 
@@ -69,18 +73,15 @@ public class CustomerServiceImpl implements CustomerService {
             throw new RuntimeException("No se encontró el cliente asociado al usuario actual.");
         }
 
-        // 2. Obtener el usuario asociado
-        User user = customer.getUser();
-
-        // 3. Actualizar campos del usuario
+        // 2. Actualizar campos del usuario (Customer extiende de User)
         if (request.getFirstName() != null) {
-            user.setFirstName(request.getFirstName());
+            customer.setFirstName(request.getFirstName());
         }
         if (request.getLastName() != null) {
-            user.setLastName(request.getLastName());
+            customer.setLastName(request.getLastName());
         }
 
-        // 4. Actualizar campos de customer
+        // 3. Actualizar campos específicos de customer
         if (request.getShippingAddress() != null) {
             customer.setShippingAddress(request.getShippingAddress());
         }
@@ -88,12 +89,92 @@ public class CustomerServiceImpl implements CustomerService {
             customer.setCarbonFootprint(request.getCarbonFootprint());
         }
 
-        // 5. Guardar cambios
-        // ⚠️ Primero guardamos user (no tiene cascade)
-        customer.getUser().setUpdatedAt(java.time.LocalDateTime.now());
+        // 4. Guardar cambios
+        customer.setUpdatedAt(java.time.LocalDateTime.now());
         customerRepository.save(customer);
 
         return customer;
+    }
+
+    // ========== Nuevos métodos CRUD con DTO ==========
+
+    @Override
+    public CustomerDTO createCustomer(CustomerDTO dto) {
+        Customer customer = new Customer();
+        customer.setEmail(dto.getEmail());
+        customer.setFirstName(dto.getFirstName());
+        customer.setLastName(dto.getLastName());
+        customer.setShippingAddress(dto.getShippingAddress());
+        customer.setBillingAddress(dto.getBillingAddress());
+        customer.setPhone(dto.getPhone());
+        customer.setCarbonFootprint(dto.getCarbonFootprint());
+        customer.setCreatedAt(java.time.LocalDateTime.now());
+        customer.setUpdatedAt(java.time.LocalDateTime.now());
+
+        Customer saved = customerRepository.save(customer);
+        return toDTO(saved);
+    }
+
+    @Override
+    public CustomerDTO getCustomerById(Long id) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Customer no encontrado con id: " + id));
+        return toDTO(customer);
+    }
+
+    @Override
+    public List<CustomerDTO> getAllCustomers() {
+        return customerRepository.findAll().stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public CustomerDTO updateCustomer(Long id, CustomerDTO dto) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Customer no encontrado con id: " + id));
+
+        if (dto.getFirstName() != null) customer.setFirstName(dto.getFirstName());
+        if (dto.getLastName() != null) customer.setLastName(dto.getLastName());
+        if (dto.getEmail() != null) customer.setEmail(dto.getEmail());
+        if (dto.getShippingAddress() != null) customer.setShippingAddress(dto.getShippingAddress());
+        if (dto.getBillingAddress() != null) customer.setBillingAddress(dto.getBillingAddress());
+        if (dto.getPhone() != null) customer.setPhone(dto.getPhone());
+        if (dto.getCarbonFootprint() != null) customer.setCarbonFootprint(dto.getCarbonFootprint());
+
+        customer.setUpdatedAt(java.time.LocalDateTime.now());
+        Customer updated = customerRepository.save(customer);
+        return toDTO(updated);
+    }
+
+    @Override
+    public void deleteCustomer(Long id) {
+        if (!customerRepository.existsById(id)) {
+            throw new RuntimeException("Customer no encontrado con id: " + id);
+        }
+        customerRepository.deleteById(id);
+    }
+
+    @Override
+    public CustomerDTO getCustomerByEmail(String email, boolean returnDTO) {
+        Customer customer = getCustomerByEmail(email);
+        return toDTO(customer);
+    }
+
+    // Método helper para convertir Customer a CustomerDTO
+    private CustomerDTO toDTO(Customer customer) {
+        return CustomerDTO.builder()
+                .id(customer.getId())
+                .email(customer.getEmail())
+                .firstName(customer.getFirstName())
+                .lastName(customer.getLastName())
+                .shippingAddress(customer.getShippingAddress())
+                .billingAddress(customer.getBillingAddress())
+                .phone(customer.getPhone())
+                .carbonFootprint(customer.getCarbonFootprint())
+                .createdAt(customer.getCreatedAt())
+                .updatedAt(customer.getUpdatedAt())
+                .build();
     }
 
 }

@@ -7,10 +7,7 @@ import java.util.Optional;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
-
-    Optional<Customer> findByUser_Id(Long userId);
-
-    Optional<Customer> findByUser_Email(String email);
-
+    // Customer extiende de User, por lo tanto tiene los campos directamente
+    Optional<Customer> findByEmail(String email);
 
 }

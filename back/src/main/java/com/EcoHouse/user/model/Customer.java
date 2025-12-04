@@ -1,11 +1,9 @@
 package com.EcoHouse.user.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.List;
 
 @Entity
 @Table(name = "customers")
@@ -13,21 +11,21 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Customer {
+@EqualsAndHashCode(callSuper = true)
+public class Customer extends User {
 
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
+    @Column(name = "shipping_address")
     private String shippingAddress;
+
+    @Column(name = "billing_address")
+    private String billingAddress;
+
+    @Column(length = 20)
+    private String phone;
+
+    @Column(name = "carbon_footprint")
     private Double carbonFootprint;
 
-
-
-
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<com.EcoHouse.order.model.Order> orderHistory;
 }

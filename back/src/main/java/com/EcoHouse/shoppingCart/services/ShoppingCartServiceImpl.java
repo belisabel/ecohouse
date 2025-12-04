@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.EcoHouse.customer.model.Customer;
-import com.EcoHouse.customer.repository.CustomerRepository;
+import com.EcoHouse.user.model.Customer;
+import com.EcoHouse.user.repository.CustomerRepository;
 import com.EcoHouse.product.model.Product;
 import com.EcoHouse.product.repository.ProductRepository;
 import com.EcoHouse.shoppingCart.model.CartItem;
