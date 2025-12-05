@@ -1,6 +1,7 @@
 package com.EcoHouse.shoppingCart.model;
 
 import com.EcoHouse.user.model.Customer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,11 +23,13 @@ public class ShoppingCart {
     private Long id;
 
     // 🔗 Relación con el Customer
+    @JsonIgnore // Evita LazyInitializationException
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
     // 🔗 Relación con los items del carrito
+    @JsonIgnore // Evita LazyInitializationException - usamos el mapper para serializarlos
     @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> items = new ArrayList<>();
 

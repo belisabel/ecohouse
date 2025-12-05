@@ -1,5 +1,6 @@
 package com.EcoHouse.product.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -43,18 +44,22 @@ public class Product {
     @Column(nullable = false)
     private Integer stock;
 
+    @JsonIgnore // Evita LazyInitializationException
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
+    @JsonIgnore // Evita LazyInitializationException
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @JsonIgnore // Evita LazyInitializationException
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "environmental_data_id")
     private EnvironmentalData environmentalData;
 
+    @JsonIgnore // Evita LazyInitializationException y referencias cíclicas
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "product_certifications",
