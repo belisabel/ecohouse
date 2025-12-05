@@ -11,6 +11,7 @@ import com.EcoHouse.order.model.*;
 import com.EcoHouse.order.repository.*;
 import com.EcoHouse.shoppingCart.model.ShoppingCart;
 import com.EcoHouse.shoppingCart.repository.*;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrderServiceImpl implements IOrderService {
@@ -25,6 +26,7 @@ public class OrderServiceImpl implements IOrderService {
     private CartItemRepository cartItemRepository;
 
     @Override
+    @Transactional
     public Order createOrder(Long customerId) {
 
         ShoppingCart cart = cartRepository.findByCustomerId(customerId)

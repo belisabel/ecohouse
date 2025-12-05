@@ -25,27 +25,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final UserRepository userRepository;
 
 
-    @Override
-    public Customer createCustomer(User user) {
-        // Validar que el email no exista
-        if (customerRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new RuntimeException("Ya existe un usuario con el email: " + user.getEmail());
-        }
 
-        // Con JOINED inheritance, crear Customer directamente guarda en ambas tablas
-        Customer customer = new Customer();
-        customer.setEmail(user.getEmail());
-        customer.setPassword(user.getPassword());
-        customer.setFirstName(user.getFirstName());
-        customer.setLastName(user.getLastName());
-        customer.setUserType(user.getUserType());
-        customer.setCreatedAt(user.getCreatedAt());
-        customer.setUpdatedAt(user.getUpdatedAt());
-        customer.setIsActive(true);
-
-        // JPA automáticamente guardará en users Y customers con el mismo ID
-        return customerRepository.save(customer);
-    }
 
     @Override
     public Customer findByUserId(Long userId) {

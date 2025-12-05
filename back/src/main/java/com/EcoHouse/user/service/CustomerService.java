@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface CustomerService {
 
-    Customer createCustomer(User user);
+
     Customer findByUserId(Long userId);
 
     Page<Customer> getAllCustomers(Pageable pageable);

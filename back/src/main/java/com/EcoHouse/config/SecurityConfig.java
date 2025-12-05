@@ -4,6 +4,7 @@ import com.EcoHouse.auth.service.CustomerDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -51,9 +52,31 @@ public class SecurityConfig {
                         .authenticated()
                         .requestMatchers("/api/customers/by-email", "/api/customers")
                         .permitAll()
+
+                        // ADMIN endpoints
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        // BRAND_ADMIN endpoints
                         .requestMatchers("/brand/**").hasRole("BRAND_ADMIN")
-                        .requestMatchers("/user/**").hasAnyRole("CUSTOMER", "ADMIN")
+
+                        // CATEGORY endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/categories/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/categories/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/categories/**").hasRole("ADMIN")
+
+                        // PRODUCT endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/products/**").hasAnyRole("ADMIN", "BRAND_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/products/**").hasAnyRole("ADMIN", "BRAND_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("ADMIN", "BRAND_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+
+                        // BRAND endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/brands/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/brands/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/brands/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/brands/**").permitAll()
+
                         .anyRequest().permitAll() // Permitir acceso a todo temporalmente
                 )
                 .httpBasic(Customizer.withDefaults());

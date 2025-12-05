@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "certifications")
+@Builder
 public class Certification {
 
     @Id

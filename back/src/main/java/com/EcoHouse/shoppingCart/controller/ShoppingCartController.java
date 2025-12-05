@@ -1,5 +1,7 @@
 package com.EcoHouse.shoppingCart.controller;
 
+import com.EcoHouse.shoppingCart.dto.ShoppingCartDTO;
+import com.EcoHouse.shoppingCart.mapper.ShoppingCartMapper;
 import com.EcoHouse.shoppingCart.model.ShoppingCart;
 import com.EcoHouse.shoppingCart.services.IShoppingCartService;
 
@@ -32,86 +34,77 @@ public class ShoppingCartController {
      */
     @Operation(summary = "Obtener carrito", description = "Obtiene el carrito de compras completo de un cliente")
     @GetMapping("/customer/{customerId}")
-    public ResponseEntity<ShoppingCart> getCart(@PathVariable Long customerId) {
+    public ResponseEntity<ShoppingCartDTO> getCart(@PathVariable Long customerId) {
         ShoppingCart cart = cartService.getCartByCustomer(customerId);
-        return ResponseEntity.ok(cart);
+        ShoppingCartDTO dto = ShoppingCartMapper.toShoppingCartDTO(cart);
+        return ResponseEntity.ok(dto);
     }
 
-    /**
-     * Agregar un producto al carrito
-     */
     @Operation(summary = "Agregar item al carrito", description = "Agrega un producto al carrito con la cantidad especificada")
     @PostMapping("/customer/{customerId}/items")
-    public ResponseEntity<ShoppingCart> addItem(
+    public ResponseEntity<ShoppingCartDTO> addItem(
             @PathVariable Long customerId,
             @RequestParam Long productId,
             @RequestParam(defaultValue = "1") Integer quantity) {
+
         ShoppingCart cart = cartService.addItem(customerId, productId, quantity);
-        return ResponseEntity.status(HttpStatus.CREATED).body(cart);
+        ShoppingCartDTO dto = ShoppingCartMapper.toShoppingCartDTO(cart);
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
-    /**
-     * Eliminar un producto del carrito
-     */
     @Operation(summary = "Eliminar item del carrito", description = "Elimina completamente un producto del carrito")
     @DeleteMapping("/customer/{customerId}/items/{productId}")
-    public ResponseEntity<ShoppingCart> removeItem(
+    public ResponseEntity<ShoppingCartDTO> removeItem(
             @PathVariable Long customerId,
             @PathVariable Long productId) {
+
         ShoppingCart cart = cartService.removeItem(customerId, productId);
-        return ResponseEntity.ok(cart);
+        ShoppingCartDTO dto = ShoppingCartMapper.toShoppingCartDTO(cart);
+        return ResponseEntity.ok(dto);
     }
 
-    /**
-     * Actualizar la cantidad de un producto en el carrito
-     */
     @Operation(summary = "Actualizar cantidad", description = "Actualiza la cantidad de un producto en el carrito")
     @PutMapping("/customer/{customerId}/items/{productId}")
-    public ResponseEntity<ShoppingCart> updateQuantity(
+    public ResponseEntity<ShoppingCartDTO> updateQuantity(
             @PathVariable Long customerId,
             @PathVariable Long productId,
             @RequestParam Integer quantity) {
+
         ShoppingCart cart = cartService.updateQuantity(customerId, productId, quantity);
-        return ResponseEntity.ok(cart);
+        ShoppingCartDTO dto = ShoppingCartMapper.toShoppingCartDTO(cart);
+        return ResponseEntity.ok(dto);
     }
 
-    /**
-     * Disminuir la cantidad de un producto en el carrito (en 1 unidad)
-     */
     @Operation(summary = "Disminuir cantidad", description = "Disminuye en 1 la cantidad de un producto en el carrito")
     @PatchMapping("/customer/{customerId}/items/{productId}/decrease")
-    public ResponseEntity<ShoppingCart> decreaseItem(
+    public ResponseEntity<ShoppingCartDTO> decreaseItem(
             @PathVariable Long customerId,
             @PathVariable Long productId) {
+
         ShoppingCart cart = cartService.decreaseItem(customerId, productId);
-        return ResponseEntity.ok(cart);
+        ShoppingCartDTO dto = ShoppingCartMapper.toShoppingCartDTO(cart);
+        return ResponseEntity.ok(dto);
     }
 
-    /**
-     * Aumentar la cantidad de un producto en el carrito (en 1 unidad)
-     */
     @Operation(summary = "Aumentar cantidad", description = "Aumenta en 1 la cantidad de un producto en el carrito")
     @PatchMapping("/customer/{customerId}/items/{productId}/increase")
-    public ResponseEntity<ShoppingCart> increaseItem(
+    public ResponseEntity<ShoppingCartDTO> increaseItem(
             @PathVariable Long customerId,
             @PathVariable Long productId) {
+
         ShoppingCart cart = cartService.addItem(customerId, productId, 1);
-        return ResponseEntity.ok(cart);
+        ShoppingCartDTO dto = ShoppingCartMapper.toShoppingCartDTO(cart);
+        return ResponseEntity.ok(dto);
     }
 
-    /**
-     * Limpiar todo el carrito
-     */
     @Operation(summary = "Limpiar carrito", description = "Elimina todos los productos del carrito")
     @DeleteMapping("/customer/{customerId}")
-    public ResponseEntity<ShoppingCart> clearCart(@PathVariable Long customerId) {
+    public ResponseEntity<ShoppingCartDTO> clearCart(@PathVariable Long customerId) {
         ShoppingCart cart = cartService.clearCart(customerId);
-        return ResponseEntity.ok(cart);
+        ShoppingCartDTO dto = ShoppingCartMapper.toShoppingCartDTO(cart);
+        return ResponseEntity.ok(dto);
     }
 
-    /**
-     * Obtener el total del carrito
-     */
     @Operation(summary = "Obtener total del carrito", description = "Devuelve el monto total del carrito")
     @GetMapping("/customer/{customerId}/total")
     public ResponseEntity<Map<String, Object>> getCartTotal(@PathVariable Long customerId) {
@@ -122,9 +115,6 @@ public class ShoppingCartController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Obtener el número de items en el carrito
-     */
     @Operation(summary = "Contar items", description = "Devuelve la cantidad total de items en el carrito")
     @GetMapping("/customer/{customerId}/count")
     public ResponseEntity<Map<String, Object>> getItemCount(@PathVariable Long customerId) {
@@ -135,14 +125,12 @@ public class ShoppingCartController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Verificar si un producto existe en el carrito
-     */
     @Operation(summary = "Verificar item", description = "Verifica si un producto específico está en el carrito")
     @GetMapping("/customer/{customerId}/items/{productId}/exists")
     public ResponseEntity<Map<String, Object>> checkItemExists(
             @PathVariable Long customerId,
             @PathVariable Long productId) {
+
         boolean exists = cartService.existsItem(customerId, productId);
         Map<String, Object> response = new HashMap<>();
         response.put("customerId", customerId);
@@ -151,9 +139,6 @@ public class ShoppingCartController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Obtener resumen del carrito (total + cantidad)
-     */
     @Operation(summary = "Resumen del carrito", description = "Devuelve un resumen con el total y cantidad de items")
     @GetMapping("/customer/{customerId}/summary")
     public ResponseEntity<Map<String, Object>> getCartSummary(@PathVariable Long customerId) {

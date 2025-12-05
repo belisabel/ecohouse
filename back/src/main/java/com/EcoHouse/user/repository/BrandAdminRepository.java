@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface BrandAdminRepository extends JpaRepository<BrandAdmin,Long> {
 
-    Optional<BrandAdmin> findByUser_Id(Long userId);
+    Optional<BrandAdmin> findByEmail(String email);
 
 
 
