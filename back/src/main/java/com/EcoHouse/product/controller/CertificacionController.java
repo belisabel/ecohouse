@@ -1,6 +1,8 @@
 package com.EcoHouse.product.controller;
 
 import com.EcoHouse.product.dto.CertificationRequest;
+import com.EcoHouse.product.dto.CertificationResponse;
+import com.EcoHouse.product.mapper.CertificationMapper;
 import com.EcoHouse.product.model.Certification;
 import com.EcoHouse.product.services.CertificationServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -18,39 +21,34 @@ public class CertificacionController {
     private final CertificationServiceImpl certificationService;
 
     @PostMapping
-    public ResponseEntity<Certification> createCertification(@RequestBody CertificationRequest request) {
-        Certification cert = Certification.builder()
-                .name(request.getName())
-                .description(request.getDescription())
-                .issuedBy(request.getOrganization())
-                .website(request.getCertificationUrl())
-                .build();
-
-        return ResponseEntity.ok(certificationService.createCertification(cert));
+    public ResponseEntity<CertificationResponse> createCertification(@RequestBody CertificationRequest request) {
+        Certification cert = CertificationMapper.toEntity(request);
+        Certification saved = certificationService.createCertification(cert);
+        return ResponseEntity.ok(CertificationMapper.toDTO(saved));
     }
 
     @GetMapping
-    public ResponseEntity<List<Certification>> getAllCertifications() {
-        return ResponseEntity.ok(certificationService.getAllCertifications());
+    public ResponseEntity<List<CertificationResponse>> getAllCertifications() {
+        List<CertificationResponse> certifications = certificationService.getAllCertifications()
+                .stream()
+                .map(CertificationMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(certifications);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Certification> getCertificationById(@PathVariable Long id) {
-        return ResponseEntity.ok(certificationService.getCertificationById(id));
+    public ResponseEntity<CertificationResponse> getCertificationById(@PathVariable Long id) {
+        Certification cert = certificationService.getCertificationById(id);
+        return ResponseEntity.ok(CertificationMapper.toDTO(cert));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Certification> updateCertification(
+    public ResponseEntity<CertificationResponse> updateCertification(
             @PathVariable Long id, @RequestBody CertificationRequest request) {
 
-        Certification cert = Certification.builder()
-                .name(request.getName())
-                .description(request.getDescription())
-                .issuedBy(request.getOrganization())
-                .website(request.getCertificationUrl())
-                .build();
-
-        return ResponseEntity.ok(certificationService.updateCertification(id, cert));
+        Certification cert = CertificationMapper.toEntity(request);
+        Certification updated = certificationService.updateCertification(id, cert);
+        return ResponseEntity.ok(CertificationMapper.toDTO(updated));
     }
 
     @DeleteMapping("/{id}")
