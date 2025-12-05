@@ -28,17 +28,9 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDto> register(@Valid @RequestBody RegisterRequest request){
-
+    public ResponseEntity<UserResponseDto> register(@Valid @RequestBody RegisterRequest request) {
 
         User user = userService.createUser(request);
-
-
-        switch (user.getUserType()) {
-            case CUSTOMER -> customerService.createCustomer(user);
-            case BRAND_ADMIN -> brandAdminService.createBrandAdmin(user);
-        }
-
 
         return ResponseEntity.ok(userService.toDto(user));
     }

@@ -1,6 +1,8 @@
 package com.EcoHouse.user.controller;
 
 
+import com.EcoHouse.user.dto.CustomerRequest;
+import com.EcoHouse.user.dto.CustomerResponse;
 import com.EcoHouse.user.dto.CustomerUpdateRequest;
 import com.EcoHouse.user.dto.UserCurrentResponse;
 import com.EcoHouse.user.dto.UserResponseDto;
@@ -16,6 +18,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -44,15 +48,15 @@ public class CustomerController {
         }
 
         UserResponseDto userDto = UserResponseDto.builder()
-                .id(customer.getUser().getId())
-                .firstName(customer.getUser().getFirstName())
-                .lastName(customer.getUser().getLastName())
-                .email(customer.getUser().getEmail())
-                .userType(customer.getUser().getUserType().name())
+                .id(customer.getId())
+                .firstName(customer.getFirstName())
+                .lastName(customer.getLastName())
+                .email(customer.getEmail())
+                .userType(customer.getUserType().name())
                 .build();
 
-        String message = "El usuario logueado actualmente es " + customer.getUser().getFirstName()
-                + " " + customer.getUser().getLastName();
+        String message = "El usuario logueado actualmente es " + customer.getFirstName()
+                + " " + customer.getLastName();
 
         return UserCurrentResponse.builder()
                 .message(message)
@@ -84,7 +88,43 @@ public class CustomerController {
         }
     }
 
+    // ========== Nuevos endpoints CRUD con DTO ==========
 
-    
+    @Operation(summary = "Crear un nuevo customer")
+    @PostMapping
+    public ResponseEntity<CustomerResponse> create(@RequestBody CustomerRequest request) {
+        return ResponseEntity.ok(customerService.createCustomer(request));
+    }
+
+    @Operation(summary = "Obtener customer por ID")
+    @GetMapping("/{id}")
+    public ResponseEntity<CustomerResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(customerService.getCustomerById(id));
+    }
+
+    @Operation(summary = "Obtener todos los customers (lista)")
+    @GetMapping("/list")
+    public ResponseEntity<List<CustomerResponse>> getAll() {
+        return ResponseEntity.ok(customerService.getAllCustomers());
+    }
+
+    @Operation(summary = "Actualizar customer por ID")
+    @PutMapping("/{id}")
+    public ResponseEntity<CustomerResponse> update(@PathVariable Long id, @RequestBody CustomerRequest request) {
+        return ResponseEntity.ok(customerService.updateCustomer(id, request));
+    }
+
+    @Operation(summary = "Eliminar customer por ID")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        customerService.deleteCustomer(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Obtener customer por email (DTO)")
+    @GetMapping("/email/{email}")
+    public ResponseEntity<CustomerResponse> getByEmailDTO(@PathVariable String email) {
+        return ResponseEntity.ok(customerService.getCustomerByEmail(email, true));
+    }
 
 }

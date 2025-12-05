@@ -2,6 +2,8 @@ package com.EcoHouse.user.service.impl;
 
 import com.EcoHouse.user.dto.RegisterRequest;
 import com.EcoHouse.user.dto.UserResponseDto;
+import com.EcoHouse.user.model.BrandAdmin;
+import com.EcoHouse.user.model.Customer;
 import com.EcoHouse.user.model.User;
 import com.EcoHouse.user.model.UserType;
 import com.EcoHouse.user.repository.UserRepository;
@@ -25,21 +27,28 @@ public class UserServiceImpl implements UserService  {
 
     @Override
     public User createUser(RegisterRequest request) {
-        User user = new User();
+
+        User user;
+
+        // 1. Crear instancia según tipo
+        if (request.getUserType() == UserType.BRAND_ADMIN) {
+            user = new BrandAdmin();
+        } else if (request.getUserType() == UserType.CUSTOMER) {
+            user = new Customer();
+        } else {
+            user = new User(); // Solo admin
+        }
+
+        // 2. Setear datos comunes
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
+        user.setUserType(request.getUserType());
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
-        if(request.getUserType() == null){
-            user.setUserType(UserType.CUSTOMER);
-        } else {
-            user.setUserType(request.getUserType());
-        }
-
-        return userRepository.save(user);
+        return userRepository.save(user);  // JPA se encarga de guardar en ambas tablas
     }
 
     @Override

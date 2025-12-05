@@ -4,6 +4,7 @@ import com.EcoHouse.auth.service.CustomerDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,25 +36,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors(Customizer.withDefaults()) // Habilitar CORS
                 .csrf(csrf -> csrf.disable())
-                .cors(Customizer.withDefaults())
-                .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
+                        // Swagger siempre accesible
                         .requestMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml"
                         ).permitAll()
+                        // Registro y login siempre accesibles
                         .requestMatchers("/auth/register", "/auth/login").permitAll()
-                        .requestMatchers("/api/customers/current", "/api/customers/update")
-                        .authenticated()
-                        .requestMatchers("/api/customers/by-email", "/api/customers")
-                        .permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/brand/**").hasRole("BRAND_ADMIN")
-                        .requestMatchers("/user/**").hasAnyRole("CUSTOMER", "ADMIN")
-                        .anyRequest().permitAll() // Permitir acceso a todo temporalmente
+                        // Todo lo demás permitido para pruebas
+                        .anyRequest().permitAll()
                 )
                 .httpBasic(Customizer.withDefaults());
 
@@ -77,7 +73,8 @@ public class SecurityConfig {
                         .allowedOriginPatterns("*")  // Usar allowedOriginPatterns en lugar de allowedOrigins
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(true)  // Necesario para que funcione con Spring Security
+                        .allowedOrigins("*")
+                        .allowCredentials(false)  // Necesario para que funcione con Spring Security, para test en false
                         .maxAge(3600);
             }
         };
