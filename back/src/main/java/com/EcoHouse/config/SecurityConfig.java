@@ -36,48 +36,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults()) //Habilitar cors 
+                .cors(Customizer.withDefaults()) // Habilitar CORS
                 .csrf(csrf -> csrf.disable())
-                .cors(Customizer.withDefaults())
-                .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
+                        // Swagger siempre accesible
                         .requestMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml"
                         ).permitAll()
+                        // Registro y login siempre accesibles
                         .requestMatchers("/auth/register", "/auth/login").permitAll()
-                        .requestMatchers("/api/customers/current", "/api/customers/update")
-                        .authenticated()
-                        .requestMatchers("/api/customers/by-email", "/api/customers")
-                        .permitAll()
-
-                        // ADMIN endpoints
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-
-                        // BRAND_ADMIN endpoints
-                        .requestMatchers("/brand/**").hasRole("BRAND_ADMIN")
-
-                        // CATEGORY endpoints
-                        .requestMatchers(HttpMethod.POST, "/api/categories/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/categories/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/categories/**").hasRole("ADMIN")
-
-                        // PRODUCT endpoints
-                        .requestMatchers(HttpMethod.POST, "/api/products/**").hasAnyRole("ADMIN", "BRAND_ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/products/**").hasAnyRole("ADMIN", "BRAND_ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("ADMIN", "BRAND_ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
-
-                        // BRAND endpoints
-                        .requestMatchers(HttpMethod.POST, "/api/brands/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/brands/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/brands/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/brands/**").permitAll()
-
-                        .anyRequest().permitAll() // Permitir acceso a todo temporalmente
+                        // Todo lo demás permitido para pruebas
+                        .anyRequest().permitAll()
                 )
                 .httpBasic(Customizer.withDefaults());
 
