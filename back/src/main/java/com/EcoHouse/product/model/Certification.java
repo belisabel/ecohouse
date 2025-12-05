@@ -1,5 +1,6 @@
 package com.EcoHouse.product.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,6 +37,7 @@ public class Certification {
     @Column(name = "created_at", updatable = false)
     private Date createdAt;
 
+    @JsonIgnore // Evita serialización accidental y referencias cíclicas
     @ManyToMany(mappedBy = "certifications", fetch = FetchType.LAZY)
     private List<Product> products; // inversa
 

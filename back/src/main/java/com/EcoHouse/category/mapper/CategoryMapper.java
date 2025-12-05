@@ -18,10 +18,8 @@ public class CategoryMapper {
                 .description(category.getDescription())
                 .iconUrl(category.getIconUrl())
                 .parentCategoryId(category.getParentCategory() != null ? category.getParentCategory().getId() : null)
-                .subCategories(category.getSubCategories() != null ?
-                    category.getSubCategories().stream()
-                        .map(CategoryMapper::toDTO)
-                        .collect(Collectors.toList()) : null)
+                // No incluimos subCategories para evitar LazyInitializationException
+                // Si se necesitan, se puede crear un endpoint específico GET /api/categories/{id}/subcategories
                 .build();
     }
 
