@@ -1,6 +1,7 @@
 package com.EcoHouse.shoppingCart.model;
 
 import com.EcoHouse.product.model.Product;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,6 +20,7 @@ public class CartItem {
     private Long id;
 
     // Producto agregado al carrito
+    @JsonIgnore // Evita LazyInitializationException
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
@@ -44,6 +46,7 @@ public class CartItem {
     private BigDecimal co2Saved;
 
     // Carrito al que pertenece
+    @JsonIgnore // Evita referencias cíclicas y LazyInitializationException
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
     private ShoppingCart shoppingCart;

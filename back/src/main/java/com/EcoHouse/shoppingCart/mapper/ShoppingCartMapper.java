@@ -26,12 +26,9 @@ public class ShoppingCartMapper {
                 .categoryId(item.getProduct().getCategory() != null ? item.getProduct().getCategory().getId() : null)
                 .categoryName(item.getProduct().getCategory() != null ? item.getProduct().getCategory().getName() : null)
                 .environmentalData(EnvironmentalDataMapper.toDTO(item.getProduct().getEnvironmentalData()))
-                .certificationIds(item.getProduct().getCertifications() != null ?
-                        item.getProduct().getCertifications().stream()
-                                .map(Certification::getId)
-                                .collect(Collectors.toList())
-                        : null
-                )
+                // ✅ NO accedemos a certifications (lazy) para evitar LazyInitializationException
+                // Si se necesitan, se pueden cargar por separado con un endpoint específico
+                .certificationIds(null)
                 .isActive(item.getProduct().getIsActive())
                 .createdAt(item.getProduct().getCreatedAt())
                 .build();
