@@ -17,7 +17,8 @@ public class ProductMapper {
         if (product == null)
             return null;
 
-        // ✅ Ahora SÍ podemos acceder a las relaciones porque se cargan con JOIN FETCH en el repository
+        // ⚠️ SOLUCIÓN FINAL: NO acceder a NINGUNA relación lazy
+        // Solo propiedades directas de Product (sin @ManyToOne, @OneToOne, @ManyToMany)
         return ProductResponse.builder()
                 .id(product.getId())
                 .name(product.getName())
@@ -26,17 +27,15 @@ public class ProductMapper {
                 .imageUrl(product.getImageUrl())
                 .additionalImages(product.getAdditionalImages())
                 .stock(product.getStock())
-                .brandId(product.getBrand() != null ? product.getBrand().getId() : null)
-                .brandName(product.getBrand() != null ? product.getBrand().getName() : null)
-                .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
-                .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
-                .environmentalData(product.getEnvironmentalData() != null ?
-                    EnvironmentalDataMapper.toDTO(product.getEnvironmentalData()) : null)
-                .certificationIds(product.getCertifications() != null
-                        ? product.getCertifications().stream().map(Certification::getId).collect(Collectors.toList())
-                        : null)
                 .isActive(product.getIsActive())
                 .createdAt(product.getCreatedAt())
+                // NO acceder a Brand, Category, EnvironmentalData, Certifications (lazy)
+                .brandId(null)
+                .brandName(null)
+                .categoryId(null)
+                .categoryName(null)
+                .environmentalData(null)
+                .certificationIds(null)
                 .build();
     }
 
