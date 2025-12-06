@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 public class ShoppingCartMapper {
 
     public static CartItemDTO toCartItemDTO(CartItem item) {
+        // ✅ Solo incluimos datos básicos del producto, sin acceder a relaciones lazy
+        // Esto evita LazyInitializationException en producción
         ProductResponse productResponse = ProductResponse.builder()
                 .id(item.getProduct().getId())
                 .name(item.getProduct().getName())
@@ -21,13 +23,15 @@ public class ShoppingCartMapper {
                 .imageUrl(item.getProduct().getImageUrl())
                 .additionalImages(item.getProduct().getAdditionalImages())
                 .stock(item.getProduct().getStock())
-                .brandId(item.getProduct().getBrand() != null ? item.getProduct().getBrand().getId() : null)
-                .brandName(item.getProduct().getBrand() != null ? item.getProduct().getBrand().getName() : null)
-                .categoryId(item.getProduct().getCategory() != null ? item.getProduct().getCategory().getId() : null)
-                .categoryName(item.getProduct().getCategory() != null ? item.getProduct().getCategory().getName() : null)
-                .environmentalData(EnvironmentalDataMapper.toDTO(item.getProduct().getEnvironmentalData()))
-                // ✅ NO accedemos a certifications (lazy) para evitar LazyInitializationException
-                // Si se necesitan, se pueden cargar por separado con un endpoint específico
+                // ❌ NO accedemos a Brand (lazy)
+                .brandId(null)
+                .brandName(null)
+                // ❌ NO accedemos a Category (lazy)
+                .categoryId(null)
+                .categoryName(null)
+                // ❌ NO accedemos a EnvironmentalData (lazy)
+                .environmentalData(null)
+                // ❌ NO accedemos a Certifications (lazy)
                 .certificationIds(null)
                 .isActive(item.getProduct().getIsActive())
                 .createdAt(item.getProduct().getCreatedAt())
