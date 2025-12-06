@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.EcoHouse.user.model.Customer;
 import com.EcoHouse.user.repository.CustomerRepository;
@@ -30,6 +31,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     private CartItemRepository cartItemRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public ShoppingCart getCartByCustomer(Long customerId) {
 
         return cartRepository.findByCustomerId(customerId)
