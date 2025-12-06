@@ -122,6 +122,7 @@ public class ProductServiceImpl implements IProductService {
     }
 
      @Override
+    @Transactional(readOnly = true)
     public List<Product> getProductsByBrand(Long brandId) {
         return productRepository.findByBrandId(brandId);
     }
