@@ -17,9 +17,7 @@ public class ProductMapper {
         if (product == null)
             return null;
 
-        // ✅ Solo incluimos datos básicos del producto, sin acceder a relaciones lazy
-        // Esto evita LazyInitializationException en producción (AWS)
-        // Si necesitas las relaciones, usa un endpoint específico con @Transactional
+        // ✅ Ahora SÍ podemos acceder a las relaciones porque se cargan con JOIN FETCH en el repository
         return ProductResponse.builder()
                 .id(product.getId())
                 .name(product.getName())
@@ -28,16 +26,15 @@ public class ProductMapper {
                 .imageUrl(product.getImageUrl())
                 .additionalImages(product.getAdditionalImages())
                 .stock(product.getStock())
-                // ❌ NO accedemos a Brand (lazy) - causaría LazyInitializationException
-                .brandId(null)
-                .brandName(null)
-                // ❌ NO accedemos a Category (lazy) - causaría LazyInitializationException
-                .categoryId(null)
-                .categoryName(null)
-                // ❌ NO accedemos a EnvironmentalData (lazy) - causaría LazyInitializationException
-                .environmentalData(null)
-                // ❌ NO accedemos a Certifications (lazy) - causaría LazyInitializationException
-                .certificationIds(null)
+                .brandId(product.getBrand() != null ? product.getBrand().getId() : null)
+                .brandName(product.getBrand() != null ? product.getBrand().getName() : null)
+                .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
+                .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
+                .environmentalData(product.getEnvironmentalData() != null ?
+                    EnvironmentalDataMapper.toDTO(product.getEnvironmentalData()) : null)
+                .certificationIds(product.getCertifications() != null
+                        ? product.getCertifications().stream().map(Certification::getId).collect(Collectors.toList())
+                        : null)
                 .isActive(product.getIsActive())
                 .createdAt(product.getCreatedAt())
                 .build();
