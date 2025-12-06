@@ -99,13 +99,16 @@ public class ProductServiceImpl implements IProductService {
     // -------------------------------------------------------------------------
     @Override
     public Product getProductById(Long id) {
-        return productRepository.findById(id)
+        // Usar JOIN FETCH para cargar relaciones en una sola query
+        return productRepository.findByIdWithRelations(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
     }
 
     @Override
     public List<Product> getAllProducts() {
-        return productRepository.findAll();
+        // Usar JOIN FETCH para cargar relaciones en una sola query
+        // Esto evita LazyInitializationException al serializar en el controller
+        return productRepository.findAllWithRelations();
     }
 
     @Override

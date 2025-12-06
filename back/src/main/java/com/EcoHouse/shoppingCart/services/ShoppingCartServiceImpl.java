@@ -34,7 +34,8 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     @Transactional(readOnly = true)
     public ShoppingCart getCartByCustomer(Long customerId) {
 
-        return cartRepository.findByCustomerId(customerId)
+        // Usar JOIN FETCH para cargar items y productos en una sola query
+        return cartRepository.findByCustomerIdWithItems(customerId)
                 .orElseGet(() -> {
                     Customer customer = customerRepository.findById(customerId)
                             .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
@@ -49,11 +50,13 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     }
 
     @Override
+    @Transactional
     public ShoppingCart addItem(Long customerId, Long productId, Integer quantity) {
 
         ShoppingCart cart = getCartByCustomer(customerId);
 
-        Product product = productRepository.findById(productId)
+        // Usar JOIN FETCH para cargar el producto con todas sus relaciones
+        Product product = productRepository.findByIdWithRelations(productId)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
         CartItem item = cart.getItems().stream()
@@ -80,6 +83,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     }
 
     @Override
+    @Transactional
     public ShoppingCart removeItem(Long customerId, Long productId) {
 
         ShoppingCart cart = getCartByCustomer(customerId);
@@ -93,6 +97,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     }
 
     @Override
+    @Transactional
     public ShoppingCart updateQuantity(Long customerId, Long productId, Integer quantity) {
 
         ShoppingCart cart = getCartByCustomer(customerId);
@@ -113,6 +118,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     }
 
     @Override
+    @Transactional
     public ShoppingCart decreaseItem(Long customerId, Long productId) {
 
         ShoppingCart cart = getCartByCustomer(customerId);
