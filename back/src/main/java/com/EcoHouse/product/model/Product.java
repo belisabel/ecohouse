@@ -33,7 +33,7 @@ public class Product {
     private String imageUrl;
 
     /** Lista de imágenes adicionales */
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "product_additional_images",
             joinColumns = @JoinColumn(name = "product_id")

@@ -19,7 +19,12 @@ public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Long
     // Esto evita LazyInitializationException al acceder a los productos
     @Query("SELECT sc FROM ShoppingCart sc " +
            "LEFT JOIN FETCH sc.items items " +
-           "LEFT JOIN FETCH items.product " +
+           "LEFT JOIN FETCH items.product p " +
+           "LEFT JOIN FETCH p.brand " +
+           "LEFT JOIN FETCH p.category " +
+           "LEFT JOIN FETCH p.environmentalData " +
+           "LEFT JOIN FETCH p.certifications " +
+           "LEFT JOIN FETCH p.additionalImages " +
            "WHERE sc.customer.id = :customerId")
     Optional<ShoppingCart> findByCustomerIdWithItems(@Param("customerId") Long customerId);
 }

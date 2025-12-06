@@ -16,6 +16,7 @@ import com.EcoHouse.shoppingCart.repository.CartItemRepository;
 import com.EcoHouse.shoppingCart.repository.ShoppingCartRepository;
 
 @Service
+@Transactional
 public class ShoppingCartServiceImpl implements IShoppingCartService {
 
     @Autowired
