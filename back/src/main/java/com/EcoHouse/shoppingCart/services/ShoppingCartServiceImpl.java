@@ -34,9 +34,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     @Override
     @Transactional(readOnly = true)
     public ShoppingCart getCartByCustomer(Long customerId) {
-
-        // Usar JOIN FETCH para cargar items y productos en una sola query
-        return cartRepository.findByCustomerIdWithItems(customerId)
+        ShoppingCart cart = cartRepository.findByCustomerIdWithItems(customerId)
                 .orElseGet(() -> {
                     Customer customer = customerRepository.findById(customerId)
                             .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
@@ -48,6 +46,15 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
 
                     return cartRepository.save(sc);
                 });
+
+        // Inicializar certificaciones para evitar LazyInitializationException
+        cart.getItems().forEach(item -> {
+            if (item.getProduct() != null) {
+                item.getProduct().getCertifications().size(); // Accede a la colección para inicializarla
+            }
+        });
+
+        return cart;
     }
 
     @Override
