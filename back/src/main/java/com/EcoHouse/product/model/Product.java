@@ -5,8 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Date;
-import java.util.List;
 
 import com.EcoHouse.category.model.Category;
 
@@ -33,13 +34,7 @@ public class Product {
 
     private String imageUrl;
 
-    /** Lista de imágenes adicionales */
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(
-            name = "product_additional_images",
-            joinColumns = @JoinColumn(name = "product_id")
-    )
-    private List<String> additionalImages;
+
 
     @Column(nullable = false)
     private Integer stock;
@@ -66,7 +61,7 @@ public class Product {
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "certification_id")
     )
-    private List<Certification> certifications;
+    private Set<Certification> certifications = new HashSet<>();
 
     @Column(nullable = false)
     private Boolean isActive = true;

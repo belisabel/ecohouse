@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,7 +55,7 @@ public class ProductServiceImpl implements IProductService {
         // ASIGNACIÓN
         product.setCategory(category);
         product.setBrand(brand);
-        product.setCertifications(certifications);
+        product.setCertifications(new HashSet<>(certifications));
 
         return productRepository.save(product);
     }
@@ -71,7 +72,6 @@ public class ProductServiceImpl implements IProductService {
         product.setDescription(data.getDescription());
         product.setPrice(data.getPrice());
         product.setImageUrl(data.getImageUrl());
-        product.setAdditionalImages(data.getAdditionalImages());
         product.setStock(data.getStock());
         product.setEnvironmentalData(data.getEnvironmentalData());
         product.setIsActive(data.getIsActive());
@@ -93,7 +93,7 @@ public class ProductServiceImpl implements IProductService {
         // CERTIFICATIONS
         if (certificationIds != null) {
             List<Certification> certs = certificationRepository.findAllById(certificationIds);
-            product.setCertifications(certs);
+            product.setCertifications(new HashSet<>(certs));
         }
 
         return productRepository.save(product);

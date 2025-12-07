@@ -117,12 +117,18 @@ public class ShoppingCartController {
 
     @Operation(summary = "Obtener resumen del carrito", description = "Devuelve el número de items y el precio total")
     @GetMapping("/customer/{customerId}/summary")
-    public ResponseEntity<Map<String, Object>> getCartSummary(@PathVariable Long customerId) {
-        Integer itemCount = cartService.getItemCount(customerId);
-        BigDecimal totalPrice = cartService.getCartTotal(customerId);
-        Map<String, Object> response = new HashMap<>();
-        response.put("itemCount", itemCount);
-        response.put("totalPrice", totalPrice);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> getCartSummary(@PathVariable Long customerId) {
+        try {
+            Integer itemCount = cartService.getItemCount(customerId);
+            BigDecimal totalPrice = cartService.getCartTotal(customerId);
+            Map<String, Object> response = new HashMap<>();
+            response.put("itemCount", itemCount);
+            response.put("totalPrice", totalPrice);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.err.println("Error getting cart summary for customer " + customerId + ": " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener el resumen del carrito: " + e.getMessage());
+        }
     }
 }

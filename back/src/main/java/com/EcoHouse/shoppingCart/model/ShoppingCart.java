@@ -6,9 +6,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -31,7 +31,7 @@ public class ShoppingCart {
     // 🔗 Relación con los items del carrito
     @JsonIgnore // Evita LazyInitializationException - usamos el mapper para serializarlos
     @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CartItem> items = new ArrayList<>();
+    private Set<CartItem> items = new HashSet<>();
 
     // 💰 Total exacto
     private BigDecimal totalPrice = BigDecimal.ZERO;
