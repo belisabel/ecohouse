@@ -99,59 +99,30 @@ public class ShoppingCartController {
     }
 
     @Operation(summary = "Limpiar carrito", description = "Elimina todos los productos del carrito")
-    @DeleteMapping("/customer/{customerId}")
+    @DeleteMapping("/customer/{customerId}/clear")
     public ResponseEntity<ShoppingCartDTO> clearCart(@PathVariable Long customerId) {
         ShoppingCart cart = cartService.clearCart(customerId);
         ShoppingCartDTO dto = shoppingCartMapper.toShoppingCartDTO(cart);
         return ResponseEntity.ok(dto);
     }
 
-    @Operation(summary = "Obtener total del carrito", description = "Devuelve el monto total del carrito")
+    @Operation(summary = "Obtener total del carrito", description = "Calcula y devuelve el precio total del carrito")
     @GetMapping("/customer/{customerId}/total")
-    public ResponseEntity<Map<String, Object>> getCartTotal(@PathVariable Long customerId) {
+    public ResponseEntity<Map<String, BigDecimal>> getCartTotal(@PathVariable Long customerId) {
         BigDecimal total = cartService.getCartTotal(customerId);
-        Map<String, Object> response = new HashMap<>();
-        response.put("customerId", customerId);
-        response.put("total", total);
+        Map<String, BigDecimal> response = new HashMap<>();
+        response.put("totalPrice", total);
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Contar items", description = "Devuelve la cantidad total de items en el carrito")
-    @GetMapping("/customer/{customerId}/count")
-    public ResponseEntity<Map<String, Object>> getItemCount(@PathVariable Long customerId) {
-        Integer count = cartService.getItemCount(customerId);
-        Map<String, Object> response = new HashMap<>();
-        response.put("customerId", customerId);
-        response.put("itemCount", count);
-        return ResponseEntity.ok(response);
-    }
-
-    @Operation(summary = "Verificar item", description = "Verifica si un producto específico está en el carrito")
-    @GetMapping("/customer/{customerId}/items/{productId}/exists")
-    public ResponseEntity<Map<String, Object>> checkItemExists(
-            @PathVariable Long customerId,
-            @PathVariable Long productId) {
-
-        boolean exists = cartService.existsItem(customerId, productId);
-        Map<String, Object> response = new HashMap<>();
-        response.put("customerId", customerId);
-        response.put("productId", productId);
-        response.put("exists", exists);
-        return ResponseEntity.ok(response);
-    }
-
-    @Operation(summary = "Resumen del carrito", description = "Devuelve un resumen con el total y cantidad de items")
+    @Operation(summary = "Obtener resumen del carrito", description = "Devuelve el número de items y el precio total")
     @GetMapping("/customer/{customerId}/summary")
     public ResponseEntity<Map<String, Object>> getCartSummary(@PathVariable Long customerId) {
-        BigDecimal total = cartService.getCartTotal(customerId);
-        Integer count = cartService.getItemCount(customerId);
-
+        Integer itemCount = cartService.getItemCount(customerId);
+        BigDecimal totalPrice = cartService.getCartTotal(customerId);
         Map<String, Object> response = new HashMap<>();
-        response.put("customerId", customerId);
-        response.put("total", total);
-        response.put("itemCount", count);
-        response.put("isEmpty", count == 0);
-
+        response.put("itemCount", itemCount);
+        response.put("totalPrice", totalPrice);
         return ResponseEntity.ok(response);
     }
 }
