@@ -28,6 +28,7 @@ import java.util.Map;
 public class ShoppingCartController {
 
     private final IShoppingCartService cartService;
+    private final ShoppingCartMapper shoppingCartMapper;
 
     /**
      * Obtener el carrito de un cliente
@@ -36,7 +37,7 @@ public class ShoppingCartController {
     @GetMapping("/customer/{customerId}")
     public ResponseEntity<ShoppingCartDTO> getCart(@PathVariable Long customerId) {
         ShoppingCart cart = cartService.getCartByCustomer(customerId);
-        ShoppingCartDTO dto = ShoppingCartMapper.toShoppingCartDTO(cart);
+        ShoppingCartDTO dto = shoppingCartMapper.toShoppingCartDTO(cart);
         return ResponseEntity.ok(dto);
     }
 
@@ -48,7 +49,7 @@ public class ShoppingCartController {
             @RequestParam(defaultValue = "1") Integer quantity) {
 
         ShoppingCart cart = cartService.addItem(customerId, productId, quantity);
-        ShoppingCartDTO dto = ShoppingCartMapper.toShoppingCartDTO(cart);
+        ShoppingCartDTO dto = shoppingCartMapper.toShoppingCartDTO(cart);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
@@ -59,7 +60,7 @@ public class ShoppingCartController {
             @PathVariable Long productId) {
 
         ShoppingCart cart = cartService.removeItem(customerId, productId);
-        ShoppingCartDTO dto = ShoppingCartMapper.toShoppingCartDTO(cart);
+        ShoppingCartDTO dto = shoppingCartMapper.toShoppingCartDTO(cart);
         return ResponseEntity.ok(dto);
     }
 
@@ -71,7 +72,7 @@ public class ShoppingCartController {
             @RequestParam Integer quantity) {
 
         ShoppingCart cart = cartService.updateQuantity(customerId, productId, quantity);
-        ShoppingCartDTO dto = ShoppingCartMapper.toShoppingCartDTO(cart);
+        ShoppingCartDTO dto = shoppingCartMapper.toShoppingCartDTO(cart);
         return ResponseEntity.ok(dto);
     }
 
@@ -82,7 +83,7 @@ public class ShoppingCartController {
             @PathVariable Long productId) {
 
         ShoppingCart cart = cartService.decreaseItem(customerId, productId);
-        ShoppingCartDTO dto = ShoppingCartMapper.toShoppingCartDTO(cart);
+        ShoppingCartDTO dto = shoppingCartMapper.toShoppingCartDTO(cart);
         return ResponseEntity.ok(dto);
     }
 
@@ -93,7 +94,7 @@ public class ShoppingCartController {
             @PathVariable Long productId) {
 
         ShoppingCart cart = cartService.addItem(customerId, productId, 1);
-        ShoppingCartDTO dto = ShoppingCartMapper.toShoppingCartDTO(cart);
+        ShoppingCartDTO dto = shoppingCartMapper.toShoppingCartDTO(cart);
         return ResponseEntity.ok(dto);
     }
 
@@ -101,7 +102,7 @@ public class ShoppingCartController {
     @DeleteMapping("/customer/{customerId}")
     public ResponseEntity<ShoppingCartDTO> clearCart(@PathVariable Long customerId) {
         ShoppingCart cart = cartService.clearCart(customerId);
-        ShoppingCartDTO dto = ShoppingCartMapper.toShoppingCartDTO(cart);
+        ShoppingCartDTO dto = shoppingCartMapper.toShoppingCartDTO(cart);
         return ResponseEntity.ok(dto);
     }
 
@@ -154,4 +155,3 @@ public class ShoppingCartController {
         return ResponseEntity.ok(response);
     }
 }
-

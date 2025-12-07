@@ -7,39 +7,34 @@ import com.EcoHouse.product.dto.ProductRequest;
 import com.EcoHouse.product.model.Brand;
 import com.EcoHouse.product.model.EnvironmentalData;
 import com.EcoHouse.product.model.Certification;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class ProductMapper {
 
-    public static ProductResponse toDTO(Product product) {
+    public ProductResponse toDTO(Product product) {
         if (product == null)
             return null;
 
-        // ⚠️ SOLUCIÓN FINAL: NO acceder a NINGUNA relación lazy
-        // Solo propiedades directas de Product (sin @ManyToOne, @OneToOne, @ManyToMany)
         return ProductResponse.builder()
                 .id(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
-                .price(product.getPrice())
+                .price(product.getPrice() != null ? product.getPrice().doubleValue() : null)
                 .imageUrl(product.getImageUrl())
                 .additionalImages(product.getAdditionalImages())
                 .stock(product.getStock())
                 .isActive(product.getIsActive())
-                .createdAt(product.getCreatedAt())
-                // NO acceder a Brand, Category, EnvironmentalData, Certifications (lazy)
-                .brandId(null)
-                .brandName(null)
-                .categoryId(null)
-                .categoryName(null)
-                .environmentalData(null)
-                .certificationIds(null)
+                .brandName(product.getBrand() != null ? product.getBrand().getName() : null)
+                .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
+                .certificationNames(product.getCertifications() != null ? product.getCertifications().stream().map(Certification::getName).collect(Collectors.toList()) : null)
                 .build();
     }
 
-    public static Product toEntity(ProductRequest request) {
+    public Product toEntity(ProductRequest request) {
         if (request == null)
             return null;
 
@@ -48,7 +43,6 @@ public class ProductMapper {
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setImageUrl(request.getImageUrl());
-        product.setAdditionalImages(request.getAdditionalImages());
         product.setStock(request.getStock());
 
         // Brand, Category, EnvironmentalData y Certifications se setean en el service

@@ -16,7 +16,6 @@ public class ProductRequest {
     private String description;
     private BigDecimal price;
     private String imageUrl;
-    private List<String> additionalImages;
     private Integer stock;
     private Long brandId;
     private Long categoryId;

@@ -1,5 +1,6 @@
 package com.EcoHouse.user.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,6 +30,7 @@ public class Customer extends User {
     @Column(name = "carbon_footprint")
     private Double carbonFootprint;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<com.EcoHouse.order.model.Order> orderHistory;
 }
