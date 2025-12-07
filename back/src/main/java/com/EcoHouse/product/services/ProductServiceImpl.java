@@ -2,6 +2,8 @@ package com.EcoHouse.product.services;
 
 import com.EcoHouse.category.model.Category;
 import com.EcoHouse.category.repository.CategoryRepository;
+import com.EcoHouse.product.dto.ProductResponse;
+import com.EcoHouse.product.mapper.ProductMapper;
 import com.EcoHouse.product.model.Brand;
 import com.EcoHouse.product.model.Certification;
 import com.EcoHouse.product.model.Product;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -25,6 +28,7 @@ public class ProductServiceImpl implements IProductService {
     private final CategoryRepository categoryRepository;
     private final BrandRepository brandRepository;
     private final CertificationRepository certificationRepository;
+    private final ProductMapper productMapper;
 
     // -------------------------------------------------------------------------
     // CREATE
@@ -60,7 +64,8 @@ public class ProductServiceImpl implements IProductService {
     // -------------------------------------------------------------------------
     @Override
     public Product updateProduct(Long id, Product data, Long categoryId, Long brandId, List<Long> certificationIds) {
-        Product product = getProductById(id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
         product.setName(data.getName());
         product.setDescription(data.getDescription());
@@ -98,33 +103,43 @@ public class ProductServiceImpl implements IProductService {
     // READ
     // -------------------------------------------------------------------------
     @Override
-    public Product getProductById(Long id) {
-        // Usar JOIN FETCH para cargar relaciones en una sola query
-        return productRepository.findByIdWithRelations(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
-    }
-
-    @Override
-    public List<Product> getAllProducts() {
-        // Usar JOIN FETCH para cargar relaciones en una sola query
-        // Esto evita LazyInitializationException al serializar en el controller
-        return productRepository.findAllWithRelations();
-    }
-
-    @Override
-    public List<Product> getActiveProducts() {
-        return productRepository.findByIsActiveTrue();
-    }
-
-     @Override
-    public List<Product> getProductsByCategory(Long categoryId) {
-        return productRepository.findByCategoryId(categoryId);
-    }
-
-     @Override
     @Transactional(readOnly = true)
-    public List<Product> getProductsByBrand(Long brandId) {
-        return productRepository.findByBrandId(brandId);
+    public ProductResponse getProductById(Long id) {
+        Product product = productRepository.findByIdWithRelations(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        return productMapper.toDTO(product);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductResponse> getAllProducts() {
+        return productRepository.findAllWithRelations().stream()
+                .map(productMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductResponse> getActiveProducts() {
+        return productRepository.findByIsActiveTrue().stream()
+                .map(productMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductResponse> getProductsByCategory(Long categoryId) {
+        return productRepository.findByCategoryId(categoryId).stream()
+                .map(productMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductResponse> getProductsByBrand(Long brandId) {
+        return productRepository.findByBrandId(brandId).stream()
+                .map(productMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     // -------------------------------------------------------------------------
@@ -132,7 +147,8 @@ public class ProductServiceImpl implements IProductService {
     // -------------------------------------------------------------------------
     @Override
     public void deleteProduct(Long id) {
-        Product product = getProductById(id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
         productRepository.delete(product);
     }
 
@@ -141,7 +157,8 @@ public class ProductServiceImpl implements IProductService {
     // -------------------------------------------------------------------------
     @Override
     public void reduceStock(Long productId, int quantity) {
-        Product product = getProductById(productId);
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
         if (product.getStock() < quantity) {
             throw new RuntimeException("Stock insuficiente: " + product.getName());
@@ -156,14 +173,16 @@ public class ProductServiceImpl implements IProductService {
     // -------------------------------------------------------------------------
     @Override
     public void activateProduct(Long id) {
-        Product product = getProductById(id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
         product.setIsActive(true);
         productRepository.save(product);
     }
 
     @Override
     public void deactivateProduct(Long id) {
-        Product product = getProductById(id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
         product.setIsActive(false);
         productRepository.save(product);
     }

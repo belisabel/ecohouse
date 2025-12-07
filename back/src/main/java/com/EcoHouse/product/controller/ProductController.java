@@ -24,10 +24,11 @@ import java.util.List;
 public class ProductController {
 
     private final ProductServiceImpl productService;
+    private final ProductMapper productMapper;
 
     @PostMapping
     public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest request) {
-        Product entity = ProductMapper.toEntity(request);
+        Product entity = productMapper.toEntity(request);
 
         if (request.getEnvironmentalData() != null) {
             entity.setEnvironmentalData(EnvironmentalDataMapper.toEntity(request.getEnvironmentalData()));
@@ -40,28 +41,24 @@ public class ProductController {
                 request.getCertificationIds()
         );
 
-        return ResponseEntity.ok(ProductMapper.toDTO(saved));
+        return ResponseEntity.ok(productMapper.toDTO(saved));
     }
 
     @GetMapping
     public ResponseEntity<List<ProductResponse>> getAllProducts() {
-        List<ProductResponse> products = productService.getAllProducts()
-                .stream()
-                .map(ProductMapper::toDTO)
-                .toList();
-
+        List<ProductResponse> products = productService.getAllProducts();
         return ResponseEntity.ok(products);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
-        Product found = productService.getProductById(id);
-        return ResponseEntity.ok(ProductMapper.toDTO(found));
+        ProductResponse found = productService.getProductById(id);
+        return ResponseEntity.ok(found);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @RequestBody ProductRequest request) {
-        Product entity = ProductMapper.toEntity(request);
+        Product entity = productMapper.toEntity(request);
 
         if (request.getEnvironmentalData() != null) {
             entity.setEnvironmentalData(EnvironmentalDataMapper.toEntity(request.getEnvironmentalData()));
@@ -75,16 +72,12 @@ public class ProductController {
                 request.getCertificationIds()
         );
 
-        return ResponseEntity.ok(ProductMapper.toDTO(updated));
+        return ResponseEntity.ok(productMapper.toDTO(updated));
     }
 
     @GetMapping("/brand/{brandId}")
     public ResponseEntity<List<ProductResponse>> getByBrand(@PathVariable Long brandId) {
-        List<ProductResponse> list = productService.getProductsByBrand(brandId)
-                .stream()
-                .map(ProductMapper::toDTO)
-                .toList();
-
+        List<ProductResponse> list = productService.getProductsByBrand(brandId);
         return ResponseEntity.ok(list);
     }
 

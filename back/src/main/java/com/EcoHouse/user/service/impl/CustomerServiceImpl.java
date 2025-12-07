@@ -13,12 +13,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
@@ -34,20 +36,23 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Customer> getAllCustomers(Pageable pageable) {
         return customerRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Customer getCustomerByEmail(String email) {
         // Buscar Customer directamente por email (Customer extiende de User)
-        return customerRepository.findByEmail(email)
+        return customerRepository.findByEmailWithUser(email)
                 .orElseThrow(() ->
                         new RuntimeException("No existe un Customer con el email: " + email)
                 );
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Customer getCurrentCustomer() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return getCustomerByEmail(email);
@@ -90,7 +95,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResponse createCustomer(CustomerRequest request) {
         // Validar que el email no exista
-        if (customerRepository.findByEmail(request.getEmail()).isPresent()) {
+        if (customerRepository.findByEmailWithUser(request.getEmail()).isPresent()) {
             throw new RuntimeException("Ya existe un usuario con el email: " + request.getEmail());
         }
 

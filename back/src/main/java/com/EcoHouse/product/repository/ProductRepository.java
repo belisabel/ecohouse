@@ -33,8 +33,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
            "LEFT JOIN FETCH p.brand " +
            "LEFT JOIN FETCH p.category " +
            "LEFT JOIN FETCH p.environmentalData " +
-           "LEFT JOIN FETCH p.certifications " +
-           "LEFT JOIN FETCH p.additionalImages")
+           "LEFT JOIN FETCH p.certifications")
     List<Product> findAllWithRelations();
 
     /**
@@ -45,7 +44,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
            "LEFT JOIN FETCH p.category " +
            "LEFT JOIN FETCH p.environmentalData " +
            "LEFT JOIN FETCH p.certifications " +
-           "LEFT JOIN FETCH p.additionalImages " +
            "WHERE p.id = :id")
     Optional<Product> findByIdWithRelations(Long id);
 }

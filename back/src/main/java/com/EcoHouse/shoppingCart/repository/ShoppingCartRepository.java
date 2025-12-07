@@ -24,7 +24,6 @@ public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Long
            "LEFT JOIN FETCH p.category " +
            "LEFT JOIN FETCH p.environmentalData " +
            "LEFT JOIN FETCH p.certifications " +
-           "LEFT JOIN FETCH p.additionalImages " +
            "WHERE sc.customer.id = :customerId")
     Optional<ShoppingCart> findByCustomerIdWithItems(@Param("customerId") Long customerId);
 }

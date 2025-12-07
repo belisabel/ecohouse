@@ -1,6 +1,7 @@
 package com.EcoHouse.product.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -10,10 +11,10 @@ import java.util.List;
 import com.EcoHouse.category.model.Category;
 
 @Entity
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "products")
 public class Product {
 
@@ -38,7 +39,6 @@ public class Product {
             name = "product_additional_images",
             joinColumns = @JoinColumn(name = "product_id")
     )
-    @Column(name = "image_url")
     private List<String> additionalImages;
 
     @Column(nullable = false)

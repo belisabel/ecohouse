@@ -1,6 +1,7 @@
 package com.EcoHouse.product.services;
 
 import com.EcoHouse.product.model.Product;
+import com.EcoHouse.product.dto.ProductResponse;
 
 import java.util.List;
 
@@ -13,19 +14,19 @@ public interface IProductService {
     Product updateProduct(Long id, Product product, Long categoryId, Long brandId, List<Long> certificationIds);
 
     // Obtener un producto por su ID
-    Product getProductById(Long id);
+    ProductResponse getProductById(Long id);
 
     // Obtener todos los productos
-    List<Product> getAllProducts();
+    List<ProductResponse> getAllProducts();
 
     // Obtener productos activos
-    List<Product> getActiveProducts();
+    List<ProductResponse> getActiveProducts();
 
     // Obtener productos por categoría
-    List<Product> getProductsByCategory(Long categoryId);
+    List<ProductResponse> getProductsByCategory(Long categoryId);
 
     // Obtener productos por marca
-    List<Product> getProductsByBrand(Long brandId);
+    List<ProductResponse> getProductsByBrand(Long brandId);
 
     // Eliminar un producto por su ID
     void deleteProduct(Long id);
