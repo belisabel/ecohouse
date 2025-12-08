@@ -11,6 +11,7 @@ import com.EcoHouse.order.model.*;
 import com.EcoHouse.order.repository.*;
 import com.EcoHouse.shoppingCart.model.ShoppingCart;
 import com.EcoHouse.shoppingCart.repository.*;
+import com.EcoHouse.product.services.IProductService;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -24,6 +25,9 @@ public class OrderServiceImpl implements IOrderService {
 
     @Autowired
     private CartItemRepository cartItemRepository;
+
+    @Autowired
+    private IProductService productService;
 
     @Override
     @Transactional
@@ -45,6 +49,12 @@ public class OrderServiceImpl implements IOrderService {
         // Crear los OrderItem con referencia a la Order
         List<OrderItem> orderItems = cart.getItems().stream()
                 .map(cartItem -> {
+
+                    // 🔥 Reducir el stock del producto
+                    productService.reduceStock(
+                        cartItem.getProduct().getId(),
+                        cartItem.getQuantity()
+                    );
 
                     OrderItem oi = new OrderItem();
                     oi.setOrder(order);  // 🔥 IMPORTANTE
@@ -96,14 +106,52 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public Order updateOrderStatus(Long orderId, OrderStatus status) {
         Order order = getOrderById(orderId);
+
+        // Validar transiciones de estado
+        validateStatusTransition(order.getStatus(), status);
+
         order.setStatus(status);
         return orderRepository.save(order);
+    }
+
+    /**
+     * Valida que la transición de estado sea lógica
+     */
+    private void validateStatusTransition(OrderStatus currentStatus, OrderStatus newStatus) {
+        // No se puede entregar si no está enviado
+        if (newStatus == OrderStatus.DELIVERED && currentStatus != OrderStatus.SHIPPED) {
+            throw new RuntimeException("No se puede marcar como DELIVERED sin estar SHIPPED primero");
+        }
+
+        // No se puede enviar si está cancelado
+        if (currentStatus == OrderStatus.CANCELLED &&
+            (newStatus == OrderStatus.SHIPPED || newStatus == OrderStatus.DELIVERED)) {
+            throw new RuntimeException("No se puede enviar una orden cancelada");
+        }
+
+        // No se puede procesar si ya está entregado
+        if (currentStatus == OrderStatus.DELIVERED && newStatus == OrderStatus.PROCESSING) {
+            throw new RuntimeException("No se puede procesar una orden ya entregada");
+        }
     }
 
     @Override
     public Order calculateImpact(Long orderId) {
         Order order = getOrderById(orderId);
         order.calculateImpact();
+        return orderRepository.save(order);
+    }
+
+    @Override
+    public Order confirmDelivery(Long orderId) {
+        Order order = getOrderById(orderId);
+
+        // Solo se puede confirmar si está enviada
+        if (order.getStatus() != OrderStatus.SHIPPED) {
+            throw new RuntimeException("Solo se puede confirmar recepción de órdenes enviadas (SHIPPED)");
+        }
+
+        order.setStatus(OrderStatus.DELIVERED);
         return orderRepository.save(order);
     }
 }
