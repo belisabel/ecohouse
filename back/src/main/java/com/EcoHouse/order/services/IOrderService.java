@@ -21,4 +21,7 @@ public interface IOrderService {
 
     // Calcular el impacto ambiental de una orden
     Order calculateImpact(Long orderId);
+
+    // Confirmar recepción de la orden (por el cliente)
+    Order confirmDelivery(Long orderId);
 }

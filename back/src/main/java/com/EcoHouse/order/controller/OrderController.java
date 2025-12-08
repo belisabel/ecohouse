@@ -116,12 +116,22 @@ public class OrderController {
     }
 
     /**
-     * Marcar orden como entregada
+     * Marcar orden como entregada (solo admin/vendedor)
      */
-    @Operation(summary = "Marcar como entregada", description = "Marca la orden como entregada (DELIVERED)")
+    @Operation(summary = "Marcar como entregada", description = "Marca la orden como entregada (DELIVERED) - uso administrativo")
     @PostMapping("/{orderId}/deliver")
     public ResponseEntity<OrderResponse> deliverOrder(@PathVariable Long orderId) {
         Order delivered = orderService.updateOrderStatus(orderId, OrderStatus.DELIVERED);
+        return ResponseEntity.ok(OrderMapper.toDTO(delivered));
+    }
+
+    /**
+     * Confirmar recepción de la orden (por el cliente)
+     */
+    @Operation(summary = "Confirmar recepción", description = "El cliente confirma que recibió su orden")
+    @PostMapping("/{orderId}/confirm-delivery")
+    public ResponseEntity<OrderResponse> confirmDelivery(@PathVariable Long orderId) {
+        Order delivered = orderService.confirmDelivery(orderId);
         return ResponseEntity.ok(OrderMapper.toDTO(delivered));
     }
 }
