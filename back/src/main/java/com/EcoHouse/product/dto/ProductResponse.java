@@ -18,5 +18,6 @@ public class ProductResponse {
     private String brandName;
     private String categoryName;
     private List<String> certificationNames;
+    private EnvironmentalDataResponse environmentalData;
 }
 
