@@ -6,9 +6,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Getter
@@ -30,8 +30,8 @@ public class ShoppingCart {
 
     // 🔗 Relación con los items del carrito
     @JsonIgnore // Evita LazyInitializationException - usamos el mapper para serializarlos
-    @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<CartItem> items = new HashSet<>();
+    @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<CartItem> items = new ArrayList<>();
 
     // 💰 Total exacto
     private BigDecimal totalPrice = BigDecimal.ZERO;
@@ -49,6 +49,7 @@ public class ShoppingCart {
     public ShoppingCart(Long customerId) {
         this.customer = new Customer();
         this.customer.setId(customerId);
+        this.items = new ArrayList<>();
     }
 
     // 📌 Se calculan los totales del carrito

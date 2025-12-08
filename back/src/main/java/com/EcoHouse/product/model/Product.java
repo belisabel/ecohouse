@@ -50,7 +50,7 @@ public class Product {
     private Category category;
 
     @JsonIgnore // Evita LazyInitializationException
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "environmental_data_id")
     private EnvironmentalData environmentalData;
 

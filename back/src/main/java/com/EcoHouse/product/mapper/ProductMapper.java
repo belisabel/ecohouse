@@ -30,6 +30,7 @@ public class ProductMapper {
                 .brandName(product.getBrand() != null ? product.getBrand().getName() : null)
                 .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
                 .certificationNames(product.getCertifications() != null ? product.getCertifications().stream().map(Certification::getName).collect(Collectors.toList()) : null)
+                .environmentalData(product.getEnvironmentalData() != null ? EnvironmentalDataMapper.toDTO(product.getEnvironmentalData()) : null)
                 .build();
     }
 
