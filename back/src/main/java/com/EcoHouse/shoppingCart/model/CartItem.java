@@ -51,6 +51,10 @@ public class CartItem {
     @JoinColumn(name = "cart_id", nullable = false)
     private ShoppingCart shoppingCart;
 
+    // Orden del item en la lista (gestionado por @OrderColumn)
+    @Column(name = "item_order", insertable = false, updatable = false)
+    private Integer itemOrder;
+
     // ------------------------------------------------------
     // UTILIDAD: Calcular subtotal
     // ------------------------------------------------------
