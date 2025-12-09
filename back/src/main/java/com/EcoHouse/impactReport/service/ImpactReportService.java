@@ -1,10 +1,14 @@
 package com.EcoHouse.impactReport.service;
 
+import com.EcoHouse.impactReport.dto.OrderDataDto;
 import com.EcoHouse.impactReport.dtoRequest.ImpactReportRequestDto;
 import com.EcoHouse.impactReport.dtoResponse.ImpactReportResponseDto;
 import com.EcoHouse.impactReport.entities.ImpactReport;
 import com.EcoHouse.impactReport.repository.ImpactReportRepository;
 import com.EcoHouse.impactReport.mapper.ImpactReportMapper;
+import com.EcoHouse.impactReport.service.ImpactCalculationService.ImpactMetrics;
+import com.EcoHouse.order.model.Order;
+import com.EcoHouse.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,8 +18,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,7 +33,9 @@ public class ImpactReportService {
 
     private final ImpactReportRepository impactReportRepository;
     private final ImpactReportMapper mapper;
-    private final CalculationService calculationService;
+    private final ImpactCalculationService calculationService;
+    private final OrderMappingService orderMappingService;
+    private final OrderRepository orderRepository;
 
     @Transactional
     public ImpactReportResponseDto generateReport(ImpactReportRequestDto request) {
@@ -38,40 +46,47 @@ public class ImpactReportService {
         validateRequest(request);
         checkIfReportAlreadyExists(request);
 
-        // 1. Obtener datos de órdenes (no disponible en este repo -> usar lista vacía)
-        List<OrderDto> customerOrders = Collections.emptyList();
+        // 1. Obtener órdenes del cliente en el rango de fechas
+        Date startDate = convertToDate(request.getStartDate());
+        Date endDate = convertToDate(request.getEndDate());
 
-        // 2. Calcular métricas de impacto
-        ImpactMetrics metrics = calculationService.calculateImpactMetrics(customerOrders);
+        List<Order> orders = orderRepository.findCompletedOrdersByCustomerAndDateRange(
+                request.getCustomerId(),
+                startDate,
+                endDate
+        );
 
-        // 3. Obtener datos adicionales si se solicitan (dejamos nulos / vacíos)
-        String sustainableProductIds = null;
-        String categoryBreakdown = null;
-        String monthlyTrend = null;
+        log.debug("Found {} orders for customer {} in date range", orders.size(), request.getCustomerId());
 
-        // 4. Crear y guardar entidad ImpactReport (conversión LocalDateTime -> LocalDate)
+        // 2. Mapear órdenes a DTOs para procesamiento
+        List<OrderDataDto> orderDataDtos = orderMappingService.mapOrdersToDto(orders);
+
+        // 3. Calcular métricas de impacto
+        ImpactMetrics metrics = calculationService.calculateImpactMetrics(orderDataDtos);
+
+        // 4. Crear y guardar entidad ImpactReport
         ImpactReport report = ImpactReport.builder()
                 .customerId(request.getCustomerId())
                 .startDate(request.getStartDate() != null ? request.getStartDate().toLocalDate() : null)
                 .endDate(request.getEndDate() != null ? request.getEndDate().toLocalDate() : null)
                 .totalCO2Saved(metrics.getTotalCO2Saved())
                 .totalCO2Footprint(metrics.getTotalCO2Footprint())
-                .totalOrders(metrics.getTotalEcoPoints() != null ? 0 : 0) // placeholder
+                .totalOrders(metrics.getTotalOrders())
                 .ecoPointsEarned(metrics.getTotalEcoPoints())
                 .totalAmountSpent(metrics.getTotalAmount())
                 .sustainableChoicesCount(metrics.getSustainableChoicesCount())
                 .reportType(request.getReportType())
-                .sustainableProductIds(sustainableProductIds)
-                .categoryBreakdown(categoryBreakdown)
-                .monthlyTrend(monthlyTrend)
+                .sustainableProductIds(null) // Se enriquecerá si se solicita
+                .categoryBreakdown(null)     // Se enriquecerá si se solicita
+                .monthlyTrend(null)          // Se enriquecerá si se solicita
                 .build();
 
         ImpactReport savedReport = impactReportRepository.save(report);
         log.info("Successfully generated impact report with ID: {}", savedReport.getId());
 
-        // 5. Convertir a DTO response y enriquecer con cálculos
+        // 5. Convertir a DTO response y enriquecer con cálculos adicionales
         ImpactReportResponseDto response = mapper.toResponseDto(savedReport);
-        enrichResponseWithCalculations(response, metrics, customerOrders, request);
+        enrichResponseWithCalculations(response, metrics, orderDataDtos, request);
 
         return response;
     }
@@ -147,10 +162,23 @@ public class ImpactReportService {
         }
     }
 
+    /**
+     * Método auxiliar para convertir LocalDateTime a Date
+     */
+    private Date convertToDate(LocalDateTime localDateTime) {
+        if (localDateTime == null) {
+            return null;
+        }
+        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    /**
+     * Enriquece la respuesta con cálculos adicionales
+     */
     private void enrichResponseWithCalculations(
             ImpactReportResponseDto response,
             ImpactMetrics metrics,
-            List<OrderDto> orders,
+            List<OrderDataDto> orders,
             ImpactReportRequestDto request
     ) {
         if (response == null || metrics == null) return;
@@ -174,14 +202,15 @@ public class ImpactReportService {
         response.setImpactLevel(calculationService.determineImpactLevel(ecoScore));
 
         // Calcular porcentaje de sostenibilidad
-        if (response.getTotalOrders() != null && response.getTotalOrders() > 0) {
+        if (response.getTotalOrders() != null && response.getTotalOrders() > 0
+                && response.getSustainableChoicesCount() != null) {
             BigDecimal sustainabilityPercentage = BigDecimal.valueOf(response.getSustainableChoicesCount())
                     .divide(BigDecimal.valueOf(response.getTotalOrders()), 2, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
             response.setSustainabilityPercentage(sustainabilityPercentage);
         }
 
-        // Agregar datos adicionales si se solicitaron (usar getters booleanos 'is...')
+        // Agregar datos adicionales si se solicitaron
         if (request.isIncludeProductBreakdown()) {
             response.setTopSustainableProducts(
                     calculationService.getTopSustainableProducts(orders)

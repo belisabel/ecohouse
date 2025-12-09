@@ -1,5 +1,7 @@
 package com.EcoHouse.order.services;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -32,64 +34,69 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     @Transactional
     public Order createOrder(Long customerId) {
+        try {
+            // Usar findByCustomerIdWithItems para cargar los items del carrito
+            ShoppingCart cart = cartRepository.findByCustomerIdWithItems(customerId)
+                    .orElseThrow(() -> new RuntimeException("Carrito no encontrado para el cliente: " + customerId));
 
-        ShoppingCart cart = cartRepository.findByCustomerId(customerId)
-                .orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
+            if (cart.getItems() == null || cart.getItems().isEmpty()) {
+                throw new RuntimeException("El carrito está vacío");
+            }
 
-        if (cart.getItems().isEmpty()) {
-            throw new RuntimeException("El carrito está vacío");
+            // Crear la orden
+            Order order = Order.builder()
+                    .customer(cart.getCustomer())
+                    .orderNumber(UUID.randomUUID().toString())
+                    .orderDate(new Date())
+                    .status(OrderStatus.PENDING)
+                    .build();
+
+            // Crear los OrderItem con referencia bidireccional a la Order
+            List<OrderItem> orderItems = new ArrayList<>();
+
+            for (var cartItem : cart.getItems()) {
+                // Forzar carga del producto
+                var product = cartItem.getProduct();
+                if (product == null || product.getId() == null) {
+                    throw new RuntimeException("Producto no válido en el carrito");
+                }
+
+                // Reducir el stock del producto ANTES de crear el OrderItem
+                productService.reduceStock(product.getId(), cartItem.getQuantity());
+
+                // Crear el OrderItem
+                OrderItem orderItem = OrderItem.builder()
+                        .order(order)
+                        .product(product)
+                        .quantity(cartItem.getQuantity())
+                        .unitPrice(cartItem.getUnitPrice() != null ? cartItem.getUnitPrice() : BigDecimal.ZERO)
+                        .subtotal(cartItem.getSubtotal() != null ? cartItem.getSubtotal() : BigDecimal.ZERO)
+                        .itemCarbonFootprint(cartItem.getItemCarbonFootprint() != null ? cartItem.getItemCarbonFootprint() : BigDecimal.ZERO)
+                        .cO2Saved(cartItem.getCo2Saved() != null ? cartItem.getCo2Saved() : BigDecimal.ZERO)
+                        .build();
+
+                orderItems.add(orderItem);
+            }
+
+            order.setItems(orderItems);
+
+            // Calcular totales
+            order.calculateImpact();
+
+            // Guardar la orden con cascada en items
+            Order savedOrder = orderRepository.save(order);
+
+            // Limpiar carrito DESPUÉS de guardar la orden exitosamente
+            cartItemRepository.deleteByShoppingCartId(cart.getId());
+
+            return savedOrder;
+
+        } catch (Exception e) {
+            // Log del error para debugging
+            System.err.println("Error al crear orden para cliente " + customerId + ": " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Error al crear la orden: " + e.getMessage(), e);
         }
-
-        Order order = new Order();
-        order.setCustomer(cart.getCustomer());
-        order.setOrderNumber(UUID.randomUUID().toString());
-        order.setOrderDate(new Date());
-        order.setStatus(OrderStatus.PENDING);
-
-        // Crear los OrderItem con referencia a la Order
-        List<OrderItem> orderItems = cart.getItems().stream()
-                .map(cartItem -> {
-
-                    // 🔥 Reducir el stock del producto
-                    productService.reduceStock(
-                        cartItem.getProduct().getId(),
-                        cartItem.getQuantity()
-                    );
-
-                    OrderItem oi = new OrderItem();
-                    oi.setOrder(order);  // 🔥 IMPORTANTE
-
-                    oi.setProduct(cartItem.getProduct());
-                    oi.setQuantity(cartItem.getQuantity());
-                    oi.setUnitPrice(cartItem.getUnitPrice());
-                    oi.setSubtotal(cartItem.getSubtotal());
-
-                    // Carbon footprint (si existe)
-                    if (cartItem.getItemCarbonFootprint() != null) {
-                        oi.setItemCarbonFootprint(cartItem.getItemCarbonFootprint());
-                    }
-
-                    // CO₂ ahorrado opcional
-                    if (cartItem.getCo2Saved() != null) {
-                        oi.setCO2Saved(cartItem.getCo2Saved());
-                    }
-
-                    return oi;
-                })
-                .toList();
-
-        order.setItems(orderItems);
-
-        // Calcular totales
-        order.calculateImpact();
-
-        // Guardar la orden con cascada en items
-        Order savedOrder = orderRepository.save(order);
-
-        // limpiar carrito
-        cartItemRepository.deleteByShoppingCartId(cart.getId());
-
-        return savedOrder;
     }
 
     @Override
