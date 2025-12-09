@@ -31,6 +31,7 @@ public class ShoppingCart {
     // 🔗 Relación con los items del carrito
     @JsonIgnore // Evita LazyInitializationException - usamos el mapper para serializarlos
     @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OrderColumn(name = "item_order")
     private List<CartItem> items = new ArrayList<>();
 
     // 💰 Total exacto
