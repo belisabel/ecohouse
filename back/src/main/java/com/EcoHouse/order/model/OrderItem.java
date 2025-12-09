@@ -63,7 +63,7 @@ public class OrderItem {
      * Si no existe, devuelve 0.
      */
     public BigDecimal getCo2Saved() {
-        return itemCarbonFootprint != null ? itemCarbonFootprint : BigDecimal.ZERO;
+        return cO2Saved != null ? cO2Saved : BigDecimal.ZERO;
     }
 
     // --------------------------------------------------------------------

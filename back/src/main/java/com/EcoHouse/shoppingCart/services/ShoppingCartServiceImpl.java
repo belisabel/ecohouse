@@ -47,9 +47,17 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
                     return cartRepository.save(sc);
                 });
 
+        // Filtrar items corruptos o con datos null
+        cart.getItems().removeIf(item ->
+            item == null ||
+            item.getProduct() == null ||
+            item.getQuantity() == null ||
+            item.getQuantity() <= 0
+        );
+
         // Inicializar certificaciones para evitar LazyInitializationException
         cart.getItems().forEach(item -> {
-            if (item.getProduct() != null) {
+            if (item.getProduct() != null && item.getProduct().getCertifications() != null) {
                 item.getProduct().getCertifications().size(); // Accede a la colección para inicializarla
             }
         });
