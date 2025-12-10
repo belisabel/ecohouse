@@ -1,14 +1,20 @@
 package com.EcoHouse.payment.mapper;
 
+import com.EcoHouse.order.model.Order;
 import com.EcoHouse.order.model.Payment;
+import com.EcoHouse.order.repository.OrderRepository;
 import com.EcoHouse.payment.dto.PaymentCreateDTO;
 import com.EcoHouse.payment.dto.PaymentDTO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component
+@RequiredArgsConstructor
 public class PaymentMapper {
+
+    private final OrderRepository orderRepository;
 
     /**
      * Convierte una entidad Payment a PaymentDTO
@@ -18,10 +24,15 @@ public class PaymentMapper {
             return null;
         }
 
+        // Buscar la orden asociada a este pago
+        Order order = orderRepository.findByPayment(payment).orElse(null);
+
         return PaymentDTO.builder()
                 .id(payment.getId())
                 .amount(payment.getAmount())
                 .paymentDate(payment.getPaymentDate())
+                .orderId(order != null ? order.getId() : null)
+                .orderNumber(order != null ? order.getOrderNumber() : null)
                 .build();
     }
 

@@ -317,6 +317,21 @@ public class DataLoader implements CommandLineRunner {
             log.info("👥 Cargando clientes de ejemplo...");
 
             Customer[] customers = {
+                    // Usuario BRAND_ADMIN para administración
+                    Customer.builder()
+                            .email("admin@ecohouse.com")
+                            .firstName("Admin")
+                            .lastName("EcoHouse")
+                            .password(passwordEncoder.encode("Admin2024!"))
+                            .userType(UserType.BRAND_ADMIN)
+                            .phone("+34900000000")
+                            .shippingAddress("Oficina Central EcoHouse, Madrid, España")
+                            .billingAddress("Oficina Central EcoHouse, Madrid, España")
+                            .carbonFootprint(0.0)
+                            .isActive(true)
+                            .createdAt(LocalDateTime.now())
+                            .build(),
+
                     Customer.builder()
                             .email("ana.garcia@gmail.com")
                             .firstName("Ana")
@@ -459,7 +474,7 @@ public class DataLoader implements CommandLineRunner {
             };
 
             customerRepository.saveAll(java.util.Arrays.asList(customers));
-            log.info("✅ {} clientes cargados", customers.length);
+            log.info("✅ {} clientes cargados (incluyendo 1 BRAND_ADMIN)", customers.length);
         } else {
             log.info("⏭️ Los clientes ya están cargados, omitiendo...");
         }
@@ -745,15 +760,12 @@ public class DataLoader implements CommandLineRunner {
     }
 
     /**
-     * Carga órdenes de ejemplo predefinidas
-     */
-    /**
-     * Carga 10 órdenes completadas de ejemplo
+     * Carga 20 órdenes completadas de ejemplo
      */
     @Transactional
     private void loadOrders() {
         if (orderRepository.count() == 0) {
-            log.info("📦 Cargando órdenes completadas de ejemplo...");
+            log.info("📦 Cargando 20 órdenes completadas de ejemplo...");
 
             List<Customer> customers = customerRepository.findAll();
             List<Product> products = productRepository.findAllWithRelations();
@@ -763,11 +775,23 @@ public class DataLoader implements CommandLineRunner {
                 return;
             }
 
+            // Validar que haya suficientes clientes y productos
+            if (customers.size() < 11) {
+                log.warn("⚠️ Se necesitan al menos 11 usuarios (1 admin + 10 clientes) para cargar las órdenes. Actualmente hay: {}", customers.size());
+                return;
+            }
+
+            if (products.size() < 10) {
+                log.warn("⚠️ Se necesitan al menos 10 productos para cargar las órdenes. Actualmente hay: {}", products.size());
+                return;
+            }
+
             List<Order> orders = new ArrayList<>();
 
-            // Orden 1: Ana García - 3 productos
+            // Orden 1: BRAND_ADMIN o primer cliente - 3 productos
+            // Usar get(1) para saltar el BRAND_ADMIN y usar el primer CUSTOMER
             Order order1 = createCompletedOrder(
-                    customers.get(0),
+                    customers.get(1),
                     "ORD-2024-001",
                     45,
                     new ShippingAddress("Calle Mayor", "123", "Madrid", "Madrid", "España", "28001")
@@ -779,7 +803,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Orden 2: Carlos López - 2 productos
             Order order2 = createCompletedOrder(
-                    customers.get(1),
+                    customers.get(2),
                     "ORD-2024-002",
                     38,
                     new ShippingAddress("Avenida Libertad", "45", "Barcelona", "Barcelona", "España", "08001")
@@ -790,7 +814,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Orden 3: María Rodríguez - 4 productos
             Order order3 = createCompletedOrder(
-                    customers.get(2),
+                    customers.get(3),
                     "ORD-2024-003",
                     32,
                     new ShippingAddress("Plaza España", "78", "Valencia", "Valencia", "España", "46001")
@@ -803,7 +827,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Orden 4: Pedro Martínez - 2 productos
             Order order4 = createCompletedOrder(
-                    customers.get(3),
+                    customers.get(4),
                     "ORD-2024-004",
                     28,
                     new ShippingAddress("Calle Sol", "12", "Sevilla", "Sevilla", "España", "41001")
@@ -814,7 +838,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Orden 5: Laura Sánchez - 3 productos
             Order order5 = createCompletedOrder(
-                    customers.get(4),
+                    customers.get(5),
                     "ORD-2024-005",
                     25,
                     new ShippingAddress("Avenida Constitución", "34", "Málaga", "Málaga", "España", "29001")
@@ -826,7 +850,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Orden 6: Javier Fernández - 2 productos
             Order order6 = createCompletedOrder(
-                    customers.get(5),
+                    customers.get(6),
                     "ORD-2024-006",
                     22,
                     new ShippingAddress("Calle Comercio", "56", "Bilbao", "Vizcaya", "España", "48001")
@@ -837,7 +861,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Orden 7: Sofía Gómez - 5 productos
             Order order7 = createCompletedOrder(
-                    customers.get(6),
+                    customers.get(7),
                     "ORD-2024-007",
                     18,
                     new ShippingAddress("Plaza Mayor", "89", "Zaragoza", "Zaragoza", "España", "50001")
@@ -851,7 +875,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Orden 8: Diego Ruiz - 3 productos
             Order order8 = createCompletedOrder(
-                    customers.get(7),
+                    customers.get(8),
                     "ORD-2024-008",
                     15,
                     new ShippingAddress("Calle Victoria", "23", "Granada", "Granada", "España", "18001")
@@ -863,7 +887,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Orden 9: Elena Torres - 3 productos
             Order order9 = createCompletedOrder(
-                    customers.get(8),
+                    customers.get(9),
                     "ORD-2024-009",
                     12,
                     new ShippingAddress("Avenida Principal", "67", "Murcia", "Murcia", "España", "30001")
@@ -875,7 +899,7 @@ public class DataLoader implements CommandLineRunner {
 
             // Orden 10: Jorge Vázquez - 4 productos
             Order order10 = createCompletedOrder(
-                    customers.get(9),
+                    customers.get(10),
                     "ORD-2024-010",
                     8,
                     new ShippingAddress("Calle Real", "90", "Alicante", "Alicante", "España", "03001")
@@ -885,6 +909,125 @@ public class DataLoader implements CommandLineRunner {
             addOrderItem(order10, products.get(8), 2);
             addOrderItem(order10, products.get(9), 1);
             orders.add(order10);
+
+            // Orden 11: Ana García (segunda orden) - 2 productos
+            Order order11 = createCompletedOrder(
+                    customers.get(1),
+                    "ORD-2024-011",
+                    7,
+                    new ShippingAddress("Calle Mayor", "123", "Madrid", "Madrid", "España", "28001")
+            );
+            addOrderItem(order11, products.get(5), 1);
+            addOrderItem(order11, products.get(7), 2);
+            orders.add(order11);
+
+            // Orden 12: Carlos López (segunda orden) - 3 productos
+            Order order12 = createCompletedOrder(
+                    customers.get(2),
+                    "ORD-2024-012",
+                    6,
+                    new ShippingAddress("Avenida Libertad", "45", "Barcelona", "Barcelona", "España", "08001")
+            );
+            addOrderItem(order12, products.get(0), 2);
+            addOrderItem(order12, products.get(3), 1);
+            addOrderItem(order12, products.get(8), 1);
+            orders.add(order12);
+
+            // Orden 13: María Rodríguez (segunda orden) - 3 productos
+            Order order13 = createCompletedOrder(
+                    customers.get(3),
+                    "ORD-2024-013",
+                    5,
+                    new ShippingAddress("Plaza España", "78", "Valencia", "Valencia", "España", "46001")
+            );
+            addOrderItem(order13, products.get(2), 1);
+            addOrderItem(order13, products.get(4), 2);
+            addOrderItem(order13, products.get(9), 1);
+            orders.add(order13);
+
+            // Orden 14: Pedro Martínez (segunda orden) - 2 productos
+            Order order14 = createCompletedOrder(
+                    customers.get(4),
+                    "ORD-2024-014",
+                    4,
+                    new ShippingAddress("Calle Sol", "12", "Sevilla", "Sevilla", "España", "41001")
+            );
+            addOrderItem(order14, products.get(1), 3);
+            addOrderItem(order14, products.get(6), 1);
+            orders.add(order14);
+
+            // Orden 15: Laura Sánchez (segunda orden) - 4 productos
+            Order order15 = createCompletedOrder(
+                    customers.get(5),
+                    "ORD-2024-015",
+                    3,
+                    new ShippingAddress("Avenida Constitución", "34", "Málaga", "Málaga", "España", "29001")
+            );
+            addOrderItem(order15, products.get(0), 1);
+            addOrderItem(order15, products.get(2), 1);
+            addOrderItem(order15, products.get(5), 2);
+            addOrderItem(order15, products.get(8), 1);
+            orders.add(order15);
+
+            // Orden 16: Javier Fernández (segunda orden) - 3 productos
+            Order order16 = createCompletedOrder(
+                    customers.get(6),
+                    "ORD-2024-016",
+                    2,
+                    new ShippingAddress("Calle Comercio", "56", "Bilbao", "Vizcaya", "España", "48001")
+            );
+            addOrderItem(order16, products.get(3), 2);
+            addOrderItem(order16, products.get(7), 1);
+            addOrderItem(order16, products.get(9), 2);
+            orders.add(order16);
+
+            // Orden 17: Sofía Gómez (segunda orden) - 2 productos
+            Order order17 = createCompletedOrder(
+                    customers.get(7),
+                    "ORD-2024-017",
+                    1,
+                    new ShippingAddress("Plaza Mayor", "89", "Zaragoza", "Zaragoza", "España", "50001")
+            );
+            addOrderItem(order17, products.get(1), 2);
+            addOrderItem(order17, products.get(4), 1);
+            orders.add(order17);
+
+            // Orden 18: Diego Ruiz (segunda orden) - 4 productos
+            Order order18 = createCompletedOrder(
+                    customers.get(8),
+                    "ORD-2024-018",
+                    1,
+                    new ShippingAddress("Calle Victoria", "23", "Granada", "Granada", "España", "18001")
+            );
+            addOrderItem(order18, products.get(0), 1);
+            addOrderItem(order18, products.get(5), 1);
+            addOrderItem(order18, products.get(6), 2);
+            addOrderItem(order18, products.get(9), 1);
+            orders.add(order18);
+
+            // Orden 19: Elena Torres (segunda orden) - 3 productos
+            Order order19 = createCompletedOrder(
+                    customers.get(9),
+                    "ORD-2024-019",
+                    1,
+                    new ShippingAddress("Avenida Principal", "67", "Murcia", "Murcia", "España", "30001")
+            );
+            addOrderItem(order19, products.get(3), 2);
+            addOrderItem(order19, products.get(7), 1);
+            addOrderItem(order19, products.get(8), 2);
+            orders.add(order19);
+
+            // Orden 20: Jorge Vázquez (segunda orden) - 3 productos
+            Order order20 = createCompletedOrder(
+                    customers.get(10),
+                    "ORD-2024-020",
+                    1,
+                    new ShippingAddress("Calle Real", "90", "Alicante", "Alicante", "España", "03001")
+            );
+            addOrderItem(order20, products.get(2), 1);
+            addOrderItem(order20, products.get(4), 2);
+            addOrderItem(order20, products.get(6), 1);
+            orders.add(order20);
 
             // Calcular totales y actualizar montos de pago
             orders.forEach(order -> {
@@ -898,7 +1041,8 @@ public class DataLoader implements CommandLineRunner {
 
             log.info("✅ {} órdenes completadas cargadas", orders.size());
         } else {
-            log.info("⏭️ Las órdenes ya están cargadas, omitiendo...");
+            long orderCount = orderRepository.count();
+            log.info("⏭️ Ya existen {} órdenes en la base de datos, omitiendo carga automática", orderCount);
         }
     }
 

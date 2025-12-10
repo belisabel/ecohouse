@@ -16,6 +16,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class PaymentCreateDTO {
 
+    @NotNull(message = "El ID de la orden es obligatorio")
+    private Long orderId;
+
     @NotNull(message = "El monto es obligatorio")
     @DecimalMin(value = "0.01", message = "El monto debe ser mayor a 0")
     private BigDecimal amount;

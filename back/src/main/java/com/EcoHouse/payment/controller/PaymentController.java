@@ -24,10 +24,12 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     /**
-     * Crear un nuevo pago
+     * Crear un nuevo pago asociado a una orden
      */
     @PostMapping
-    @Operation(summary = "Crear un nuevo pago", description = "Crea un nuevo registro de pago")
+    @Operation(summary = "Crear un nuevo pago",
+               description = "Crea un nuevo registro de pago y lo asocia a una orden específica. " +
+                           "La orden no debe tener un pago previo asociado.")
     public ResponseEntity<PaymentDTO> createPayment(@Valid @RequestBody PaymentCreateDTO createDTO) {
         PaymentDTO createdPayment = paymentService.createPayment(createDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPayment);

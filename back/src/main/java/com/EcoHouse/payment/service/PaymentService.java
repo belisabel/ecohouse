@@ -1,6 +1,8 @@
 package com.EcoHouse.payment.service;
 
+import com.EcoHouse.order.model.Order;
 import com.EcoHouse.order.model.Payment;
+import com.EcoHouse.order.repository.OrderRepository;
 import com.EcoHouse.payment.dto.PaymentCreateDTO;
 import com.EcoHouse.payment.dto.PaymentDTO;
 import com.EcoHouse.payment.mapper.PaymentMapper;
@@ -21,18 +23,35 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
+    private final OrderRepository orderRepository;
 
     /**
-     * Crear un nuevo pago
+     * Crear un nuevo pago y asociarlo a una orden
      */
     @Transactional
     public PaymentDTO createPayment(PaymentCreateDTO createDTO) {
-        log.info("Creando nuevo pago con monto: {}", createDTO.getAmount());
+        log.info("Creando nuevo pago con monto: {} para orden ID: {}",
+                createDTO.getAmount(), createDTO.getOrderId());
 
+        // Verificar que la orden existe
+        Order order = orderRepository.findById(createDTO.getOrderId())
+                .orElseThrow(() -> new RuntimeException("Orden no encontrada con ID: " + createDTO.getOrderId()));
+
+        // Verificar que la orden no tenga ya un pago
+        if (order.getPayment() != null) {
+            throw new RuntimeException("La orden con ID: " + createDTO.getOrderId() + " ya tiene un pago asociado");
+        }
+
+        // Crear el pago
         Payment payment = paymentMapper.toEntity(createDTO);
         Payment savedPayment = paymentRepository.save(payment);
 
-        log.info("Pago creado exitosamente con ID: {}", savedPayment.getId());
+        // Asociar el pago a la orden
+        order.setPayment(savedPayment);
+        orderRepository.save(order);
+
+        log.info("Pago creado exitosamente con ID: {} y asociado a orden ID: {}",
+                savedPayment.getId(), order.getId());
         return paymentMapper.toDTO(savedPayment);
     }
 
