@@ -2,9 +2,10 @@ package com.EcoHouse.order.dto;
 
 import lombok.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
- * DTO de request para Payment - sin id ni timestamps (para POST)
+ * DTO de request para Payment - estructura simplificada
  */
 @Getter
 @Setter
@@ -12,8 +13,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 public class PaymentRequest {
-    private String paymentMethod;
     private BigDecimal amount;
-    private String transactionId;
+    private LocalDateTime paymentDate; // Opcional, si no se proporciona se usa la fecha actual
 }
 

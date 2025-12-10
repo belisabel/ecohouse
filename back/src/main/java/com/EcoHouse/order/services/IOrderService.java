@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.EcoHouse.order.model.Order;
 import com.EcoHouse.order.model.OrderStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface IOrderService {
 
@@ -15,6 +17,9 @@ public interface IOrderService {
 
     // Obtener todas las órdenes de un cliente
     List<Order> getOrdersByCustomer(Long customerId);
+
+    // Obtener todas las órdenes con paginación
+    Page<Order> getAllOrders(Pageable pageable);
 
     // Actualizar el estado de una orden
     Order updateOrderStatus(Long orderId, OrderStatus status);

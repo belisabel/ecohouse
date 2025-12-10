@@ -8,9 +8,14 @@ import com.EcoHouse.order.model.OrderStatus;
 import com.EcoHouse.order.services.IOrderService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +34,26 @@ import java.util.stream.Collectors;
 public class OrderController {
 
     private final IOrderService orderService;
+
+    /**
+     * Obtener todas las órdenes con paginación
+     */
+    @Operation(summary = "Obtener todas las órdenes con paginación",
+               description = "Lista todas las órdenes del sistema ordenadas por ID")
+    @GetMapping
+    public ResponseEntity<Page<OrderResponse>> getAllOrders(
+            @Parameter(description = "Número de página (inicia en 0)")
+            @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Tamaño de página")
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<Order> ordersPage = orderService.getAllOrders(pageable);
+        Page<OrderResponse> responsePage = ordersPage.map(OrderMapper::toDTO);
+
+        return ResponseEntity.ok(responsePage);
+    }
 
     /**
      * Crear una nueva orden a partir del carrito de un cliente
@@ -135,4 +160,3 @@ public class OrderController {
         return ResponseEntity.ok(OrderMapper.toDTO(delivered));
     }
 }
-

@@ -1,18 +1,19 @@
-package com.EcoHouse.order.dto;
+package com.EcoHouse.payment.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * DTO de respuesta para Payment - estructura simplificada
- */
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class PaymentResponse {
+public class PaymentDTO {
+
     private Long id;
     private BigDecimal amount;
     private LocalDateTime paymentDate;
