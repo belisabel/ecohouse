@@ -27,6 +27,8 @@ public class ShoppingCartMapper {
                 .id(item.getId())
                 .product(productResponse)
                 .quantity(item.getQuantity())
+                .unitPrice(item.getUnitPrice())
+                .subtotal(item.getSubtotal())
                 .build();
     }
 

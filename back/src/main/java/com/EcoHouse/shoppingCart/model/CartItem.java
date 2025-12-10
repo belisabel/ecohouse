@@ -30,11 +30,11 @@ public class CartItem {
     private Integer quantity;
 
     // Precio unitario del momento
-    @Column(precision = 10, scale = 2, nullable = false)
+    @Column(name = "unit_price", precision = 10, scale = 2, nullable = false)
     private BigDecimal unitPrice;
 
     // Subtotal = unitPrice * quantity
-    @Column(precision = 10, scale = 2)
+    @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal subtotal;
 
     // Huella ecológica del ítem (kg CO2)
@@ -61,6 +61,15 @@ public class CartItem {
     public void calculateSubtotal() {
         if (unitPrice != null && quantity != null) {
             this.subtotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
+        } else {
+            this.subtotal = BigDecimal.ZERO;
         }
+    }
+
+    @PrePersist
+    @PreUpdate
+    protected void onSave() {
+        // Asegurar que el subtotal siempre se calcule antes de persistir
+        calculateSubtotal();
     }
 }

@@ -18,7 +18,7 @@ import java.util.Map;
         "http://localhost:5173",
         "http://localhost:3000"
 })
-@Tag(name = "Z - Admin Tools", description = "🔧 Herramientas administrativas para gestión de datos de ejemplo y testing")
+@Tag(name = "ZZZ - Admin Tools", description = "🔧 Herramientas administrativas para gestión de datos de ejemplo y testing")
 public class OrderDataLoaderController {
 
     private final OrderDataLoaderService orderDataLoaderService;
