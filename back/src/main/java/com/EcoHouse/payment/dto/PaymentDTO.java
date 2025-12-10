@@ -17,5 +17,7 @@ public class PaymentDTO {
     private Long id;
     private BigDecimal amount;
     private LocalDateTime paymentDate;
+    private Long orderId; // ID de la orden asociada
+    private String orderNumber; // Número de orden para referencia
 }
 
