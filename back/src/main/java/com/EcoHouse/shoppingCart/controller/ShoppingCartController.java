@@ -131,4 +131,18 @@ public class ShoppingCartController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener el resumen del carrito: " + e.getMessage());
         }
     }
+
+    @Operation(
+        summary = "🔧 Recalcular carrito (Fix)",
+        description = "Endpoint de emergencia para recalcular todos los valores del carrito (unitPrice, subtotal, totales). " +
+                      "Útil para corregir items con valores NULL."
+    )
+    @PostMapping("/customer/{customerId}/recalculate")
+    public ResponseEntity<ShoppingCartDTO> recalculateCart(@PathVariable Long customerId) {
+        // Este endpoint fuerza el recálculo llamando a getCartByCustomer
+        // que tiene la lógica de corrección automática
+        ShoppingCart cart = cartService.getCartByCustomer(customerId);
+        ShoppingCartDTO dto = shoppingCartMapper.toShoppingCartDTO(cart);
+        return ResponseEntity.ok(dto);
+    }
 }

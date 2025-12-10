@@ -32,7 +32,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     private CartItemRepository cartItemRepository;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public ShoppingCart getCartByCustomer(Long customerId) {
         ShoppingCart cart = cartRepository.findByCustomerIdWithItems(customerId)
                 .orElseGet(() -> {
@@ -55,12 +55,43 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
             item.getQuantity() <= 0
         );
 
-        // Inicializar certificaciones para evitar LazyInitializationException
-        cart.getItems().forEach(item -> {
-            if (item.getProduct() != null && item.getProduct().getCertifications() != null) {
-                item.getProduct().getCertifications().size(); // Accede a la colección para inicializarla
+        boolean needsUpdate = false;
+
+        // Recalcular items con valores null (fix para items existentes)
+        for (CartItem item : cart.getItems()) {
+            if (item.getUnitPrice() == null || item.getSubtotal() == null) {
+                // Cargar producto completo si es necesario
+                if (item.getProduct().getPrice() == null) {
+                    Product fullProduct = productRepository.findByIdWithRelations(item.getProduct().getId())
+                            .orElse(item.getProduct());
+                    item.setProduct(fullProduct);
+                }
+
+                // Establecer unitPrice
+                if (item.getUnitPrice() == null) {
+                    item.setUnitPrice(item.getProduct().getPrice());
+                    needsUpdate = true;
+                }
+
+                // Calcular subtotal
+                if (item.getSubtotal() == null) {
+                    item.calculateSubtotal();
+                    needsUpdate = true;
+                }
             }
-        });
+
+            // Inicializar certificaciones para evitar LazyInitializationException
+            if (item.getProduct() != null && item.getProduct().getCertifications() != null) {
+                item.getProduct().getCertifications().size();
+            }
+        }
+
+        // Si hubo cambios, guardar el carrito
+        if (needsUpdate) {
+            cart.calculateTotal();
+            cart.calculateEcoImpact();
+            cart = cartRepository.save(cart);
+        }
 
         return cart;
     }
@@ -84,14 +115,29 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
             item = new CartItem();
             item.setProduct(product);
             item.setShoppingCart(cart);
-            item.setQuantity(0);
+            item.setQuantity(quantity);
+            item.setUnitPrice(product.getPrice());
             cart.getItems().add(item);
+        } else {
+            item.setQuantity(item.getQuantity() + quantity);
         }
 
-        item.setQuantity(item.getQuantity() + quantity);
-        item.setUnitPrice(product.getPrice());
-        item.setSubtotal(item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
+        // Asegurar que unitPrice siempre esté actualizado
+        if (item.getUnitPrice() == null) {
+            item.setUnitPrice(product.getPrice());
+        }
 
+        // Calcular subtotal del item
+        item.calculateSubtotal();
+
+        // Calcular datos ambientales si están disponibles
+        if (product.getEnvironmentalData() != null && product.getEnvironmentalData().getCarbonFootprint() != null) {
+            BigDecimal carbonPerUnit = product.getEnvironmentalData().getCarbonFootprint();
+            item.setItemCarbonFootprint(carbonPerUnit);
+            item.setCo2Saved(carbonPerUnit.multiply(new BigDecimal("0.30"))); // 30% de ahorro vs convencional
+        }
+
+        // Calcular totales del carrito
         cart.calculateTotal();
         cart.calculateEcoImpact();
 

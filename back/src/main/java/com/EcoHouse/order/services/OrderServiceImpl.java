@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.EcoHouse.order.model.*;
@@ -108,6 +110,11 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public List<Order> getOrdersByCustomer(Long customerId) {
         return orderRepository.findByCustomerId(customerId);
+    }
+
+    @Override
+    public Page<Order> getAllOrders(Pageable pageable) {
+        return orderRepository.findAll(pageable);
     }
 
     @Override

@@ -56,6 +56,7 @@ public class ShoppingCart {
     // 📌 Se calculan los totales del carrito
     public void calculateTotal() {
         this.totalPrice = items.stream()
+                .filter(item -> item.getSubtotal() != null)
                 .map(CartItem::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }

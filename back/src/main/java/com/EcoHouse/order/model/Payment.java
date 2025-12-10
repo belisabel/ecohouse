@@ -3,13 +3,14 @@ package com.EcoHouse.order.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "payments")
 public class Payment {
 
@@ -17,23 +18,18 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Tipo de pago (tarjeta, transferencia, MP, etc.)
-    @Column(nullable = false, length = 30)
-    private String paymentMethod;
-
-    // Estado del pago (PAID, FAILED, PENDING...)
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private PaymentStatus status;
-
-    // Monto abonado
+    // Monto del pago
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal amount;
 
-    // Identificador externo (Stripe, MP, etc.)
-    private String transactionId;
-
     // Fecha del pago
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date paymentDate;
+    @Column(nullable = false)
+    private LocalDateTime paymentDate;
+
+    @PrePersist
+    public void prePersist() {
+        if (paymentDate == null) {
+            paymentDate = LocalDateTime.now();
+        }
+    }
 }
