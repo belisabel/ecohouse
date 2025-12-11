@@ -86,4 +86,18 @@ public class ProductController {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
+
+
+    @GetMapping("/eco/lowest-footprint")
+    public ResponseEntity<List<ProductResponse>> getEcoProducts() {
+        return ResponseEntity.ok(productService.getProductsOrderedByCarbonFootprint());
+    }
+
+    @GetMapping("/eco/top5")
+    public ResponseEntity<List<ProductResponse>> getTop5EcoProducts() {
+        return ResponseEntity.ok(productService.getTop5LowestCarbonFootprintProducts());
+    }
+
+
+
 }

@@ -13,6 +13,7 @@ import com.EcoHouse.product.repository.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -185,6 +186,25 @@ public class ProductServiceImpl implements IProductService {
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
         product.setIsActive(false);
         productRepository.save(product);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductResponse> getProductsOrderedByCarbonFootprint() {
+        return productRepository.findAllOrderByCarbonFootprintAsc()
+                .stream()
+                .map(productMapper::toDTO)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductResponse> getTop5LowestCarbonFootprintProducts() {
+        return productRepository
+                .findTop5OrderByCarbonFootprintAsc(PageRequest.of(0, 5))
+                .stream()
+                .map(productMapper::toDTO)
+                .toList();
     }
 
 }

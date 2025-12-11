@@ -1,6 +1,7 @@
 package com.EcoHouse.product.repository;
 
 import com.EcoHouse.product.model.Product;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -46,4 +47,26 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
            "LEFT JOIN FETCH p.certifications " +
            "WHERE p.id = :id")
     Optional<Product> findByIdWithRelations(Long id);
+
+
+    /*** todos los productos activos ordenados por menor huella de carbono*/
+    @Query("""
+    SELECT p FROM Product p
+    LEFT JOIN FETCH p.environmentalData ed
+    WHERE p.isActive = true AND ed.carbonFootprint IS NOT NULL
+    ORDER BY ed.carbonFootprint ASC
+""")
+    List<Product> findAllOrderByCarbonFootprintAsc();
+
+
+    /*** Traer SOLO los 5 productos con menor huella*/
+
+    @Query("""
+    SELECT p FROM Product p
+    LEFT JOIN p.environmentalData ed
+    WHERE p.isActive = true AND ed.carbonFootprint IS NOT NULL
+    ORDER BY ed.carbonFootprint ASC
+""")
+    List<Product> findTop5OrderByCarbonFootprintAsc(Pageable pageable);
+
 }

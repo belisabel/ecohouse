@@ -39,4 +39,13 @@ public interface IProductService {
 
     // Desactivar un producto
     void deactivateProduct(Long id);
+
+
+    // Productos ordenados por huella ambiental (todos)
+    List<ProductResponse> getProductsOrderedByCarbonFootprint();
+
+    // Solo los 5 productos más ecológicos
+    List<ProductResponse> getTop5LowestCarbonFootprintProducts();
+
+
 }

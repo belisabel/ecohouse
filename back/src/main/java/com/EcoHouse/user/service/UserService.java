@@ -1,6 +1,7 @@
 package com.EcoHouse.user.service;
 
 import com.EcoHouse.user.dto.RegisterRequest;
+import com.EcoHouse.user.dto.UpdateUserRequest;
 import com.EcoHouse.user.dto.UserResponseDto;
 import com.EcoHouse.user.model.User;
 
@@ -13,5 +14,7 @@ public interface UserService {
     UserResponseDto toDto(User user);
     boolean emailExists(String email);
     User getByEmail(String email);
+
+    User updateUserByEmail(String email, UpdateUserRequest request);
 
 }

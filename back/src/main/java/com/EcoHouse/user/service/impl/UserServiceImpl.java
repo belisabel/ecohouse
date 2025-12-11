@@ -1,6 +1,7 @@
 package com.EcoHouse.user.service.impl;
 
 import com.EcoHouse.user.dto.RegisterRequest;
+import com.EcoHouse.user.dto.UpdateUserRequest;
 import com.EcoHouse.user.dto.UserResponseDto;
 import com.EcoHouse.user.model.BrandAdmin;
 import com.EcoHouse.user.model.Customer;
@@ -75,6 +76,30 @@ public class UserServiceImpl implements UserService  {
     @Override
     public User getByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
+    }
+
+
+    @Override
+    public User updateUserByEmail(String email, UpdateUserRequest request) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (request.getFirstName() != null && !request.getFirstName().isBlank()) {
+            user.setFirstName(request.getFirstName());
+        }
+
+        if (request.getLastName() != null && !request.getLastName().isBlank()) {
+            user.setLastName(request.getLastName());
+        }
+
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        user.setUpdatedAt(LocalDateTime.now());
+
+        return userRepository.save(user);
     }
 
 }
