@@ -166,7 +166,12 @@ public class ImpactCalculationService {
             if (order.getOrderDate() != null) {
                 YearMonth yearMonth = YearMonth.from(order.getOrderDate());
                 monthlyMap.computeIfAbsent(yearMonth, MonthlyData::new)
-                        .addOrder(order.getTotalAmount(), order.getCo2Saved());
+                        .addOrder(
+                                order.getTotalAmount(),
+                                order.getCo2Saved(),
+                                order.getTotalCarbonFootprint(),
+                                order.getEcoPointsEarned()
+                        );
             }
         }
 
@@ -176,8 +181,8 @@ public class ImpactCalculationService {
                         .ordersCount(e.getValue().getOrderCount())
                         .amountSpent(e.getValue().getTotalSpent())
                         .co2Saved(e.getValue().getCo2Saved())
-                        .co2Footprint(BigDecimal.ZERO) // Se puede calcular si es necesario
-                        .ecoPoints(0) // Se puede calcular si es necesario
+                        .co2Footprint(e.getValue().getCo2Footprint())
+                        .ecoPoints(e.getValue().getEcoPoints())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -310,15 +315,19 @@ public class ImpactCalculationService {
         private int orderCount = 0;
         private BigDecimal totalSpent = BigDecimal.ZERO;
         private BigDecimal co2Saved = BigDecimal.ZERO;
+        private BigDecimal co2Footprint = BigDecimal.ZERO;
+        private Integer ecoPoints = 0;
 
         public MonthlyData(YearMonth month) {
             this.month = month;
         }
 
-        public void addOrder(BigDecimal amount, BigDecimal co2) {
+        public void addOrder(BigDecimal amount, BigDecimal co2Saved, BigDecimal co2Footprint, Integer ecoPoints) {
             this.orderCount++;
             this.totalSpent = this.totalSpent.add(amount);
-            this.co2Saved = this.co2Saved.add(co2);
+            this.co2Saved = this.co2Saved.add(co2Saved != null ? co2Saved : BigDecimal.ZERO);
+            this.co2Footprint = this.co2Footprint.add(co2Footprint != null ? co2Footprint : BigDecimal.ZERO);
+            this.ecoPoints += (ecoPoints != null ? ecoPoints : 0);
         }
     }
 
