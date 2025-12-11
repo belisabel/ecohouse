@@ -84,21 +84,30 @@ Full API documentation available at `/swagger-ui/index.html` when running.
 
 ## 📚 Documentación del Proyecto
 
-### Guías de Inicio Rápido
-- **[QUICKSTART.md](./QUICKSTART.md)** - Guía de 10 minutos para testing del sistema de Impact Report
-  - Setup rápido en 3 pasos
-  - Testing completo en 10 pasos
-  - Troubleshooting común
+### 📖 Documentación Completa
+- **[DOCUMENTATION.md](./DOCUMENTATION.md)** - 📘 **Documentación Técnica Completa**
+  - Arquitectura del sistema
+  - Stack tecnológico detallado
+  - Modelo de datos y relaciones
+  - Todos los endpoints de la API
+  - Configuración y despliegue
+  - Sistema de EcoPoints
+  - Guías de contribución
 
-### Documentación Técnica
-- **[FLUJO_SISTEMA.md](./FLUJO_SISTEMA.md)** - Explicación detallada del flujo de órdenes e impact reports
-  - Diagramas de flujo
-  - Explicación paso a paso
-  - Cálculos de métricas
+### 🚀 Guías de Inicio Rápido
+- **[QUICKSTART.md](./QUICKSTART.md)** - ⚡ **Guía de 5 Minutos**
+  - Setup rápido en 4 pasos
+  - Testing inmediato
+  - Comandos útiles
+  - Troubleshooting rápido
 
-- **[TESTING_IMPACT_REPORT.md](./TESTING_IMPACT_REPORT.md)** - Guía completa de testing
-  - Tests manuales en Swagger
-  - Tests automatizados con cURL
+### 🔌 API Reference
+- **[API_REFERENCE.md](./API_REFERENCE.md)** - 📋 **Referencia Completa de API**
+  - Todos los endpoints documentados
+  - Parámetros de request/response
+  - Ejemplos de uso con cURL
+  - Modelos de datos
+  - Códigos de error
   - Casos de prueba específicos
 
 - **[README_IMPACT_REPORT.md](./README_IMPACT_REPORT.md)** - Overview del sistema de reportes
