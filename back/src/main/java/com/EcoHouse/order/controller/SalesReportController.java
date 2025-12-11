@@ -26,7 +26,7 @@ import java.util.Map;
     description = "API para reportes y estadísticas de ventas. " +
                   "Permite consultar información sobre ventas totales, ventas por cliente, " +
                   "y estadísticas completas de rendimiento del negocio. " +
-                  "Todos los montos están en Euros (EUR)."
+                  "Todos los montos están en Dólares (USD)."
 )
 public class SalesReportController {
 
@@ -53,7 +53,7 @@ public class SalesReportController {
                     name = "Ejemplo de respuesta",
                     value = "{\n" +
                            "  \"totalSales\": 2829.47,\n" +
-                           "  \"currency\": \"EUR\"\n" +
+                           "  \"currency\": \"USD\"\n" +
                            "}"
                 )
             )
@@ -67,7 +67,7 @@ public class SalesReportController {
         BigDecimal totalSales = salesReportService.getTotalSales();
         return ResponseEntity.ok(Map.of(
                 "totalSales", totalSales,
-                "currency", "EUR"
+                "currency", "USD"
         ));
     }
 
@@ -94,7 +94,7 @@ public class SalesReportController {
                            "  \"startDate\": \"2025-11-01T00:00:00\",\n" +
                            "  \"endDate\": \"2025-12-09T23:59:59\",\n" +
                            "  \"totalSales\": 1856.43,\n" +
-                           "  \"currency\": \"EUR\"\n" +
+                           "  \"currency\": \"USD\"\n" +
                            "}"
                 )
             )
@@ -125,7 +125,7 @@ public class SalesReportController {
                 "startDate", startDate,
                 "endDate", endDate,
                 "totalSales", totalSales,
-                "currency", "EUR"
+                "currency", "USD"
         ));
     }
 
@@ -169,6 +169,94 @@ public class SalesReportController {
     }
 
     /**
+     * Obtener ventas totales de un cliente específico
+     */
+    @GetMapping("/customer/{customerId}")
+    @Operation(
+        summary = "Obtener ventas totales de un cliente específico",
+        description = """
+                ### 📊 Descripción
+                Retorna el total de ventas (suma de todas las órdenes completadas) para un cliente específico.
+                
+                Este endpoint calcula la suma del campo 'totalAmount' de todas las órdenes con estado DELIVERED
+                que pertenecen al cliente especificado.
+                
+                ### 💡 Casos de Uso
+                - **Dashboard del Cliente**: Mostrar el total gastado históricamente
+                - **Análisis de Valor del Cliente**: Identificar clientes de alto valor (VIP)
+                - **Segmentación**: Clasificar clientes por nivel de gasto
+                - **Reportes Individuales**: Generar resumen de compras por cliente
+                
+                ### 📈 Métricas Incluidas
+                - **totalSales**: Suma total de todas las compras completadas
+                - **totalOrders**: Número de órdenes completadas
+                - **averageOrderValue**: Valor promedio por orden
+                - **customerId**: ID del cliente consultado
+                - **customerName**: Nombre completo del cliente
+                - **currency**: Moneda (USD)
+                
+                ### 📊 Ejemplo
+                ```
+                GET /api/sales/customer/1
+                ```
+                """
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "✅ Ventas del cliente obtenidas exitosamente",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = Map.class),
+                examples = @ExampleObject(
+                    name = "Ejemplo de respuesta",
+                    value = """
+                            {
+                              "customerId": 1,
+                              "customerName": "Ana García",
+                              "totalSales": 459.92,
+                              "totalOrders": 3,
+                              "averageOrderValue": 153.31,
+                              "currency": "USD"
+                            }
+                            """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "❌ Cliente no encontrado o sin órdenes completadas",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(
+                    value = """
+                            {
+                              "error": "Not Found",
+                              "message": "No se encontraron ventas para el cliente 999"
+                            }
+                            """
+                )
+            )
+        )
+    })
+    public ResponseEntity<Map<String, Object>> getSalesByCustomerId(
+            @Parameter(
+                description = "ID único del cliente en el sistema",
+                required = true,
+                example = "1"
+            )
+            @PathVariable Long customerId) {
+
+        Map<String, Object> customerSales = salesReportService.getSalesByCustomerId(customerId);
+
+        if (customerSales.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(customerSales);
+    }
+
+    /**
      * Obtener estadísticas completas de ventas
      */
     @GetMapping("/statistics")
@@ -176,16 +264,16 @@ public class SalesReportController {
         summary = "Obtener estadísticas completas de ventas",
         description = "Retorna un conjunto completo de métricas clave del negocio basadas en órdenes completadas (DELIVERED). " +
                       "Incluye: " +
-                      "• **totalSales**: Suma total de ventas en EUR " +
+                      "• **totalSales**: Suma total de ventas en USD " +
                       "• **totalOrders**: Número total de órdenes completadas " +
                       "• **averageOrderValue**: Valor promedio por orden (totalSales / totalOrders) " +
-                      "• **currency**: Moneda de los montos (EUR) " +
+                      "• **currency**: Moneda de los montos (USD) " +
                       "\n\nEste endpoint es ideal para dashboards y reportes ejecutivos."
     )
     @ApiResponses(value = {
         @ApiResponse(
             responseCode = "200",
-            description = "Estadísticas calculadas exitosamente",
+            description = "estadísticas calculadas exitosamente",
             content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(implementation = Map.class),
@@ -195,7 +283,7 @@ public class SalesReportController {
                            "  \"totalSales\": 2829.47,\n" +
                            "  \"totalOrders\": 10,\n" +
                            "  \"averageOrderValue\": 282.95,\n" +
-                           "  \"currency\": \"EUR\"\n" +
+                           "  \"currency\": \"USD\"\n" +
                            "}"
                 )
             )
@@ -232,7 +320,7 @@ public class SalesReportController {
                     name = "Ejemplo de respuesta",
                     value = "{\n" +
                            "  \"totalPayments\": 2829.47,\n" +
-                           "  \"currency\": \"EUR\"\n" +
+                           "  \"currency\": \"USD\"\n" +
                            "}"
                 )
             )
@@ -246,8 +334,9 @@ public class SalesReportController {
         BigDecimal totalPayments = salesReportService.getTotalPayments();
         return ResponseEntity.ok(Map.of(
                 "totalPayments", totalPayments,
-                "currency", "EUR"
+                "currency", "USD"
         ));
     }
 }
+
 

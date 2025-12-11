@@ -57,8 +57,9 @@ public class ImpactCalculationService {
      * Calcula un score de eficiencia ecológica (0-100)
      */
     public BigDecimal calculateEcoEfficiencyScore(ImpactMetrics metrics) {
+        // Si no hay huella de carbono (sin compras), retornar 0
         if (metrics.getTotalCO2Footprint().compareTo(BigDecimal.ZERO) == 0) {
-            return BigDecimal.valueOf(100);
+            return BigDecimal.ZERO;
         }
 
         // Score basado en: CO2 ahorrado / CO2 total * 100
@@ -81,6 +82,11 @@ public class ImpactCalculationService {
      * Determina el nivel de impacto basado en el score
      */
     public String determineImpactLevel(BigDecimal ecoScore) {
+        // Caso especial: sin compras (score = 0)
+        if (ecoScore.compareTo(BigDecimal.ZERO) == 0) {
+            return "SIN DATOS";
+        }
+
         if (ecoScore.compareTo(BigDecimal.valueOf(80)) >= 0) {
             return "EXCELENTE";
         } else if (ecoScore.compareTo(BigDecimal.valueOf(60)) >= 0) {
