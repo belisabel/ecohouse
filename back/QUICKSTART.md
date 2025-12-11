@@ -82,25 +82,6 @@ curl -X POST http://localhost:9000/api/reports/generate \
 
 ---
 
-## 📊 Datos de Ejemplo Precargados
-
-Al iniciar la aplicación, se cargan automáticamente:
-
-### Usuarios
-| Email | Password | Rol |
-|-------|----------|-----|
-| admin@ecohouse.com | Admin2024! | BRAND_ADMIN |
-| ana.garcia@gmail.com | password123 | CUSTOMER |
-| carlos.lopez@gmail.com | password123 | CUSTOMER |
-| maria.rodriguez@gmail.com | password123 | CUSTOMER |
-
-### Datos
-- ✅ 10 Marcas (Patagonia, EcoAlf, etc.)
-- ✅ 10 Categorías (Camisetas, Jeans, etc.)
-- ✅ 10 Certificaciones (GOTS, Fair Trade, etc.)
-- ✅ 11 Clientes (1 admin + 10 usuarios)
-- ✅ 10 Productos con datos ambientales
-- ✅ 20 Órdenes completadas
 
 ---
 
