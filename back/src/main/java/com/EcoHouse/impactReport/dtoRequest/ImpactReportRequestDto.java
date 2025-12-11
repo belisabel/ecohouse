@@ -31,13 +31,13 @@ public class ImpactReportRequestDto {
     private ReportType reportType = ReportType.ON_DEMAND;
 
     @Builder.Default
-    private boolean includeProductBreakdown = false;
+    private boolean includeProductBreakdown = true;
 
     @Builder.Default
-    private boolean includeCategoryAnalysis = false;
+    private boolean includeCategoryAnalysis = true;
 
     @Builder.Default
-    private boolean includeMonthlyTrend = false;
+    private boolean includeMonthlyTrend = true;
 
     @Builder.Default
     private boolean generateDetailedMetrics = true;

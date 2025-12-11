@@ -99,7 +99,11 @@ public class ImpactReportService {
                 .findByCustomerIdAndIsActiveTrueOrderByCreatedAtDesc(customerId);
 
         return reports.stream()
-                .map(mapper::toResponseDto)
+                .map(report -> {
+                    ImpactReportResponseDto dto = mapper.toResponseDto(report);
+                    enrichStoredReport(dto);
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -109,7 +113,11 @@ public class ImpactReportService {
 
         return impactReportRepository
                 .findFirstByCustomerIdOrderByCreatedAtDesc(customerId)
-                .map(mapper::toResponseDto);
+                .map(report -> {
+                    ImpactReportResponseDto dto = mapper.toResponseDto(report);
+                    enrichStoredReport(dto);
+                    return dto;
+                });
     }
 
     @Transactional(readOnly = true)
@@ -120,6 +128,19 @@ public class ImpactReportService {
     @Transactional(readOnly = true)
     public Integer getCustomerTotalEcoPoints(Long customerId) {
         return impactReportRepository.getTotalEcoPointsByCustomer(customerId);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<ImpactReportResponseDto> getReportById(Long reportId) {
+        log.debug("Retrieving report by ID: {}", reportId);
+
+        return impactReportRepository.findById(reportId)
+                .filter(ImpactReport::getIsActive)
+                .map(report -> {
+                    ImpactReportResponseDto dto = mapper.toResponseDto(report);
+                    enrichStoredReport(dto);
+                    return dto;
+                });
     }
 
     @Transactional
@@ -229,6 +250,89 @@ public class ImpactReportService {
                             request.getStartDate() != null ? request.getStartDate().toLocalDate() : null,
                             request.getEndDate() != null ? request.getEndDate().toLocalDate() : null)
             );
+        }
+
+        // Calcular achievements
+        response.setAchievements(
+                calculationService.calculateEcoAchievements(response)
+        );
+    }
+
+    /**
+     * Enriquece un reporte guardado con cálculos adicionales
+     * Se usa cuando se recuperan reportes de la BD
+     */
+    private void enrichStoredReport(ImpactReportResponseDto response) {
+        if (response == null) return;
+
+        // Calcular promedio de CO2 por orden
+        if (response.getTotalOrders() != null && response.getTotalOrders() > 0) {
+            BigDecimal avgCO2 = response.getTotalCO2Footprint()
+                    .divide(BigDecimal.valueOf(response.getTotalOrders()), 3, RoundingMode.HALF_UP);
+            response.setAverageOrderCO2(avgCO2);
+
+            BigDecimal avgOrderValue = response.getTotalAmountSpent()
+                    .divide(BigDecimal.valueOf(response.getTotalOrders()), 2, RoundingMode.HALF_UP);
+            response.setAverageOrderValue(avgOrderValue);
+        }
+
+        // Crear métricas desde los datos guardados
+        ImpactMetrics metrics = ImpactMetrics.builder()
+                .totalCO2Saved(response.getTotalCO2Saved())
+                .totalCO2Footprint(response.getTotalCO2Footprint())
+                .totalAmount(response.getTotalAmountSpent())
+                .totalEcoPoints(response.getEcoPointsEarned())
+                .sustainableChoicesCount(response.getSustainableChoicesCount())
+                .totalOrders(response.getTotalOrders())
+                .build();
+
+        // Calcular score de eficiencia ecológica
+        BigDecimal ecoScore = calculationService.calculateEcoEfficiencyScore(metrics);
+        response.setEcoEfficiencyScore(ecoScore);
+
+        // Determinar nivel de impacto
+        response.setImpactLevel(calculationService.determineImpactLevel(ecoScore));
+
+        // Calcular porcentaje de sostenibilidad
+        if (response.getTotalOrders() != null && response.getTotalOrders() > 0
+                && response.getSustainableChoicesCount() != null) {
+            BigDecimal sustainabilityPercentage = BigDecimal.valueOf(response.getSustainableChoicesCount())
+                    .divide(BigDecimal.valueOf(response.getTotalOrders()), 2, RoundingMode.HALF_UP)
+                    .multiply(BigDecimal.valueOf(100));
+            response.setSustainabilityPercentage(sustainabilityPercentage);
+        }
+
+        // Reconstruir datos detallados desde las órdenes del período si están disponibles
+        Date startDate = convertToDate(response.getStartDate());
+        Date endDate = convertToDate(response.getEndDate());
+
+        if (startDate != null && endDate != null) {
+            List<Order> orders = orderRepository.findCompletedOrdersByCustomerAndDateRange(
+                    response.getCustomerId(),
+                    startDate,
+                    endDate
+            );
+
+            if (!orders.isEmpty()) {
+                List<OrderDataDto> orderDataDtos = orderMappingService.mapOrdersToDto(orders);
+
+                // Agregar desglose por categorías
+                response.setCategoryImpactBreakdown(
+                        calculationService.getCategoryImpactBreakdown(orderDataDtos)
+                );
+
+                // Agregar top productos sostenibles
+                response.setTopSustainableProducts(
+                        calculationService.getTopSustainableProducts(orderDataDtos)
+                );
+
+                // Agregar tendencia mensual
+                response.setMonthlyTrend(
+                        calculationService.getMonthlyTrend(orderDataDtos,
+                                response.getStartDate() != null ? response.getStartDate().toLocalDate() : null,
+                                response.getEndDate() != null ? response.getEndDate().toLocalDate() : null)
+                );
+            }
         }
 
         // Calcular achievements

@@ -31,6 +31,12 @@ import java.util.List;
     description = "**API para Gestión de Reportes de Impacto Ambiental**\n\n" +
                   "Este módulo permite generar y consultar reportes detallados del impacto ambiental " +
                   "generado por las compras de cada cliente en la plataforma EcoHouse.\n\n" +
+                  "### 📋 Tipos de Reportes Disponibles:\n" +
+                  "- **MONTHLY** (Monthly Report): Reporte mensual del impacto ambiental\n" +
+                  "- **QUARTERLY** (Quarterly Report): Reporte trimestral (3 meses)\n" +
+                  "- **ANNUAL** (Annual Report): Reporte anual completo (12 meses)\n" +
+                  "- **CUSTOM** (Custom Period Report): Reporte personalizado con fechas específicas\n" +
+                  "- **ON_DEMAND** (On Demand Report): Reporte generado bajo demanda\n\n" +
                   "### 🌱 Funcionalidades Principales:\n" +
                   "- **Generación de Reportes**: Crea reportes de impacto para períodos específicos\n" +
                   "- **Consulta por Cliente**: Obtiene historial completo de reportes de un cliente\n" +
@@ -431,8 +437,15 @@ public class ImpactReportController {
                 GET /api/reports/5
                 ```
                 
-                ### ⚠️ Nota Técnica
-                Este endpoint actualmente retorna 404 (implementación pendiente en el service).
+                ### ✅ Respuesta
+                Retorna el reporte completo con todos los campos calculados:
+                - Métricas básicas (CO2, Eco Points, órdenes)
+                - Promedios (CO2 por orden, valor por orden)
+                - Eco Score e Impact Level
+                - Desglose por categorías
+                - Top productos sostenibles
+                - Tendencias mensuales
+                - Achievements
                 """
     )
     @ApiResponses(value = {
@@ -513,19 +526,16 @@ public class ImpactReportController {
 
         log.debug("🔍 Obteniendo reporte con ID: {}", reportId);
 
-        // TODO: Implementar en el service
-        // return impactReportService.getReportById(reportId)
-        //     .map(report -> {
-        //         log.debug("✅ Reporte encontrado - Cliente: {}", report.getCustomerId());
-        //         return ResponseEntity.ok(report);
-        //     })
-        //     .orElseGet(() -> {
-        //         log.debug("❌ Reporte no encontrado con ID: {}", reportId);
-        //         return ResponseEntity.notFound().build();
-        //     });
-
-        log.warn("⚠️ Endpoint getReportById no implementado completamente en el service");
-        return ResponseEntity.notFound().build(); // Placeholder
+        return impactReportService.getReportById(reportId)
+            .map(report -> {
+                log.debug("✅ Reporte encontrado - Cliente: {} | Período: {} - {}",
+                         report.getCustomerId(), report.getStartDate(), report.getEndDate());
+                return ResponseEntity.ok(report);
+            })
+            .orElseGet(() -> {
+                log.debug("❌ Reporte no encontrado con ID: {}", reportId);
+                return ResponseEntity.notFound().build();
+            });
     }
 
     @GetMapping("/customer/{customerId}/stats")

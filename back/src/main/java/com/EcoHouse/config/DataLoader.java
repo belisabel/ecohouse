@@ -49,6 +49,7 @@ public class DataLoader implements CommandLineRunner {
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final PasswordEncoder passwordEncoder;
+    private final com.EcoHouse.order.service.EcoPointsCalculationService ecoPointsCalculationService;
 
     @Override
     public void run(String... args) {
@@ -80,7 +81,7 @@ public class DataLoader implements CommandLineRunner {
                             .name("EcoAlf")
                             .description("Primera marca de moda sostenible del mundo con materiales reciclados")
                             .imageUrl("https://example.com/ecoalf-logo.png")
-                            .country("España")
+                            .country("USA")
                             .build(),
 
                     Brand.builder()
@@ -324,9 +325,9 @@ public class DataLoader implements CommandLineRunner {
                             .lastName("EcoHouse")
                             .password(passwordEncoder.encode("Admin2024!"))
                             .userType(UserType.BRAND_ADMIN)
-                            .phone("+34900000000")
-                            .shippingAddress("Oficina Central EcoHouse, Madrid, España")
-                            .billingAddress("Oficina Central EcoHouse, Madrid, España")
+                            .phone("+12125550000")
+                            .shippingAddress("EcoHouse Headquarters, New York, NY, USA")
+                            .billingAddress("EcoHouse Headquarters, New York, NY, USA")
                             .carbonFootprint(0.0)
                             .isActive(true)
                             .createdAt(LocalDateTime.now())
@@ -338,9 +339,9 @@ public class DataLoader implements CommandLineRunner {
                             .lastName("García")
                             .password(passwordEncoder.encode("password123"))
                             .userType(UserType.CUSTOMER)
-                            .phone("+34612345678")
-                            .shippingAddress("Calle Mayor 123, Madrid, España")
-                            .billingAddress("Calle Mayor 123, Madrid, España")
+                            .phone("+13105551234")
+                            .shippingAddress("123 Main Street, Los Angeles, CA, USA")
+                            .billingAddress("123 Main Street, Los Angeles, CA, USA")
                             .carbonFootprint(0.0)
                             .isActive(true)
                             .createdAt(LocalDateTime.now())
@@ -352,9 +353,9 @@ public class DataLoader implements CommandLineRunner {
                             .lastName("López")
                             .password(passwordEncoder.encode("password123"))
                             .userType(UserType.CUSTOMER)
-                            .phone("+34623456789")
-                            .shippingAddress("Avenida Libertad 45, Barcelona, España")
-                            .billingAddress("Avenida Libertad 45, Barcelona, España")
+                            .phone("+14155552345")
+                            .shippingAddress("45 Liberty Avenue, San Francisco, CA, USA")
+                            .billingAddress("45 Liberty Avenue, San Francisco, CA, USA")
                             .carbonFootprint(0.0)
                             .isActive(true)
                             .createdAt(LocalDateTime.now())
@@ -366,9 +367,9 @@ public class DataLoader implements CommandLineRunner {
                             .lastName("Rodríguez")
                             .password(passwordEncoder.encode("password123"))
                             .userType(UserType.CUSTOMER)
-                            .phone("+34634567890")
-                            .shippingAddress("Plaza España 78, Valencia, España")
-                            .billingAddress("Plaza España 78, Valencia, España")
+                            .phone("+17135553456")
+                            .shippingAddress("78 Valencia Street, Houston, TX, USA")
+                            .billingAddress("78 Valencia Street, Houston, TX, USA")
                             .carbonFootprint(0.0)
                             .isActive(true)
                             .createdAt(LocalDateTime.now())
@@ -380,9 +381,9 @@ public class DataLoader implements CommandLineRunner {
                             .lastName("Martínez")
                             .password(passwordEncoder.encode("password123"))
                             .userType(UserType.CUSTOMER)
-                            .phone("+34645678901")
-                            .shippingAddress("Calle Sol 12, Sevilla, España")
-                            .billingAddress("Calle Sol 12, Sevilla, España")
+                            .phone("+13055554567")
+                            .shippingAddress("12 Sun Street, Miami, FL, USA")
+                            .billingAddress("12 Sun Street, Miami, FL, USA")
                             .carbonFootprint(0.0)
                             .isActive(true)
                             .createdAt(LocalDateTime.now())
@@ -394,9 +395,9 @@ public class DataLoader implements CommandLineRunner {
                             .lastName("Sánchez")
                             .password(passwordEncoder.encode("password123"))
                             .userType(UserType.CUSTOMER)
-                            .phone("+34656789012")
-                            .shippingAddress("Avenida Constitución 34, Málaga, España")
-                            .billingAddress("Avenida Constitución 34, Málaga, España")
+                            .phone("+16025555678")
+                            .shippingAddress("34 Constitution Avenue, Phoenix, AZ, USA")
+                            .billingAddress("34 Constitution Avenue, Phoenix, AZ, USA")
                             .carbonFootprint(0.0)
                             .isActive(true)
                             .createdAt(LocalDateTime.now())
@@ -408,9 +409,9 @@ public class DataLoader implements CommandLineRunner {
                             .lastName("Fernández")
                             .password(passwordEncoder.encode("password123"))
                             .userType(UserType.CUSTOMER)
-                            .phone("+34667890123")
-                            .shippingAddress("Calle Comercio 56, Bilbao, España")
-                            .billingAddress("Calle Comercio 56, Bilbao, España")
+                            .phone("+12065556789")
+                            .shippingAddress("56 Commerce Street, Seattle, WA, USA")
+                            .billingAddress("56 Commerce Street, Seattle, WA, USA")
                             .carbonFootprint(0.0)
                             .isActive(true)
                             .createdAt(LocalDateTime.now())
@@ -422,9 +423,9 @@ public class DataLoader implements CommandLineRunner {
                             .lastName("Gómez")
                             .password(passwordEncoder.encode("password123"))
                             .userType(UserType.CUSTOMER)
-                            .phone("+34678901234")
-                            .shippingAddress("Plaza Mayor 89, Zaragoza, España")
-                            .billingAddress("Plaza Mayor 89, Zaragoza, España")
+                            .phone("+17205557890")
+                            .shippingAddress("89 Main Plaza, Denver, CO, USA")
+                            .billingAddress("89 Main Plaza, Denver, CO, USA")
                             .carbonFootprint(0.0)
                             .isActive(true)
                             .createdAt(LocalDateTime.now())
@@ -436,9 +437,9 @@ public class DataLoader implements CommandLineRunner {
                             .lastName("Ruiz")
                             .password(passwordEncoder.encode("password123"))
                             .userType(UserType.CUSTOMER)
-                            .phone("+34689012345")
-                            .shippingAddress("Calle Victoria 23, Granada, España")
-                            .billingAddress("Calle Victoria 23, Granada, España")
+                            .phone("+15035558901")
+                            .shippingAddress("23 Victory Street, Portland, OR, USA")
+                            .billingAddress("23 Victory Street, Portland, OR, USA")
                             .carbonFootprint(0.0)
                             .isActive(true)
                             .createdAt(LocalDateTime.now())
@@ -450,9 +451,9 @@ public class DataLoader implements CommandLineRunner {
                             .lastName("Torres")
                             .password(passwordEncoder.encode("password123"))
                             .userType(UserType.CUSTOMER)
-                            .phone("+34690123456")
-                            .shippingAddress("Avenida Principal 67, Murcia, España")
-                            .billingAddress("Avenida Principal 67, Murcia, España")
+                            .phone("+16155559012")
+                            .shippingAddress("67 Main Avenue, Nashville, TN, USA")
+                            .billingAddress("67 Main Avenue, Nashville, TN, USA")
                             .carbonFootprint(0.0)
                             .isActive(true)
                             .createdAt(LocalDateTime.now())
@@ -464,9 +465,9 @@ public class DataLoader implements CommandLineRunner {
                             .lastName("Vázquez")
                             .password(passwordEncoder.encode("password123"))
                             .userType(UserType.CUSTOMER)
-                            .phone("+34601234567")
-                            .shippingAddress("Calle Real 90, Alicante, España")
-                            .billingAddress("Calle Real 90, Alicante, España")
+                            .phone("+17025550123")
+                            .shippingAddress("90 Royal Street, Las Vegas, NV, USA")
+                            .billingAddress("90 Royal Street, Las Vegas, NV, USA")
                             .carbonFootprint(0.0)
                             .isActive(true)
                             .createdAt(LocalDateTime.now())
@@ -536,7 +537,7 @@ public class DataLoader implements CommandLineRunner {
             EnvironmentalData env2 = new EnvironmentalData();
             env2.setCarbonFootprint(new BigDecimal("8.5"));
             env2.setMaterial("60% algodón reciclado, 40% poliéster reciclado");
-            env2.setCountryOfOrigin("España");
+            env2.setCountryOfOrigin("USA");
             env2.setEnergyConsumption(new BigDecimal("45.0"));
             env2.setRecyclablePercentage(new BigDecimal("85.0"));
             env2.setNotes("Ahorra 3500 litros de agua comparado con jeans convencionales");
@@ -586,7 +587,7 @@ public class DataLoader implements CommandLineRunner {
             EnvironmentalData env4 = new EnvironmentalData();
             env4.setCarbonFootprint(new BigDecimal("12.8"));
             env4.setMaterial("Poliéster reciclado de redes de pesca");
-            env4.setCountryOfOrigin("Portugal");
+            env4.setCountryOfOrigin("USA");
             env4.setEnergyConsumption(new BigDecimal("55.0"));
             env4.setRecyclablePercentage(new BigDecimal("100.0"));
             env4.setNotes("Ayuda a limpiar los océanos, libre de PFC tóxicos");
@@ -660,7 +661,7 @@ public class DataLoader implements CommandLineRunner {
             EnvironmentalData env7 = new EnvironmentalData();
             env7.setCarbonFootprint(new BigDecimal("1.8"));
             env7.setMaterial("Algodón orgánico");
-            env7.setCountryOfOrigin("Turquía");
+            env7.setCountryOfOrigin("USA");
             env7.setEnergyConsumption(new BigDecimal("12.0"));
             env7.setRecyclablePercentage(new BigDecimal("100.0"));
             env7.setNotes("Libre de químicos irritantes, ideal para piel sensible");
@@ -685,7 +686,7 @@ public class DataLoader implements CommandLineRunner {
             EnvironmentalData env8 = new EnvironmentalData();
             env8.setCarbonFootprint(new BigDecimal("6.0"));
             env8.setMaterial("Nylon reciclado, elastano");
-            env8.setCountryOfOrigin("Italia");
+            env8.setCountryOfOrigin("USA");
             env8.setEnergyConsumption(new BigDecimal("30.0"));
             env8.setRecyclablePercentage(new BigDecimal("85.0"));
             env8.setNotes("Material técnico de alto rendimiento, secado rápido");
@@ -735,7 +736,7 @@ public class DataLoader implements CommandLineRunner {
             EnvironmentalData env10 = new EnvironmentalData();
             env10.setCarbonFootprint(new BigDecimal("3.5"));
             env10.setMaterial("Nylon reciclado de plásticos oceánicos");
-            env10.setCountryOfOrigin("España");
+            env10.setCountryOfOrigin("USA");
             env10.setEnergyConsumption(new BigDecimal("18.0"));
             env10.setRecyclablePercentage(new BigDecimal("100.0"));
             env10.setNotes("Ayuda a limpiar los océanos, resistente al cloro y al agua salada");
@@ -794,30 +795,30 @@ public class DataLoader implements CommandLineRunner {
                     customers.get(1),
                     "ORD-2024-001",
                     45,
-                    new ShippingAddress("Calle Mayor", "123", "Madrid", "Madrid", "España", "28001")
+                    new ShippingAddress("Main Street", "123", "Los Angeles", "CA", "USA", "90001")
             );
             addOrderItem(order1, products.get(0), 2);
             addOrderItem(order1, products.get(1), 1);
             addOrderItem(order1, products.get(2), 1);
             orders.add(order1);
 
-            // Orden 2: Carlos López - 2 productos
+            // Orden 2: Carlos LÃ³pez - 2 productos
             Order order2 = createCompletedOrder(
                     customers.get(2),
                     "ORD-2024-002",
                     38,
-                    new ShippingAddress("Avenida Libertad", "45", "Barcelona", "Barcelona", "España", "08001")
+                    new ShippingAddress("Liberty Avenue", "45", "San Francisco", "CA", "USA", "94102")
             );
             addOrderItem(order2, products.get(3), 1);
             addOrderItem(order2, products.get(4), 2);
             orders.add(order2);
 
-            // Orden 3: María Rodríguez - 4 productos
+            // Orden 3: MarÃ­a RodrÃ­guez - 4 productos
             Order order3 = createCompletedOrder(
                     customers.get(3),
                     "ORD-2024-003",
                     32,
-                    new ShippingAddress("Plaza España", "78", "Valencia", "Valencia", "España", "46001")
+                    new ShippingAddress("Valencia Street", "78", "Houston", "TX", "USA", "77001")
             );
             addOrderItem(order3, products.get(5), 1);
             addOrderItem(order3, products.get(6), 3);
@@ -825,46 +826,46 @@ public class DataLoader implements CommandLineRunner {
             addOrderItem(order3, products.get(8), 2);
             orders.add(order3);
 
-            // Orden 4: Pedro Martínez - 2 productos
+            // Orden 4: Pedro MartÃ­nez - 2 productos
             Order order4 = createCompletedOrder(
                     customers.get(4),
                     "ORD-2024-004",
                     28,
-                    new ShippingAddress("Calle Sol", "12", "Sevilla", "Sevilla", "España", "41001")
+                    new ShippingAddress("Sun Street", "12", "Miami", "FL", "USA", "33101")
             );
             addOrderItem(order4, products.get(9), 2);
             addOrderItem(order4, products.get(0), 1);
             orders.add(order4);
 
-            // Orden 5: Laura Sánchez - 3 productos
+            // Orden 5: Laura SÃ¡nchez - 3 productos
             Order order5 = createCompletedOrder(
                     customers.get(5),
                     "ORD-2024-005",
                     25,
-                    new ShippingAddress("Avenida Constitución", "34", "Málaga", "Málaga", "España", "29001")
+                    new ShippingAddress("Constitution Avenue", "34", "Phoenix", "AZ", "USA", "85001")
             );
             addOrderItem(order5, products.get(1), 1);
             addOrderItem(order5, products.get(3), 1);
             addOrderItem(order5, products.get(6), 2);
             orders.add(order5);
 
-            // Orden 6: Javier Fernández - 2 productos
+            // Orden 6: Javier FernÃ¡ndez - 2 productos
             Order order6 = createCompletedOrder(
                     customers.get(6),
                     "ORD-2024-006",
                     22,
-                    new ShippingAddress("Calle Comercio", "56", "Bilbao", "Vizcaya", "España", "48001")
+                    new ShippingAddress("Commerce Street", "56", "Seattle", "WA", "USA", "98101")
             );
             addOrderItem(order6, products.get(2), 2);
             addOrderItem(order6, products.get(7), 1);
             orders.add(order6);
 
-            // Orden 7: Sofía Gómez - 5 productos
+            // Orden 7: SofÃ­a GÃ³mez - 5 productos
             Order order7 = createCompletedOrder(
                     customers.get(7),
                     "ORD-2024-007",
                     18,
-                    new ShippingAddress("Plaza Mayor", "89", "Zaragoza", "Zaragoza", "España", "50001")
+                    new ShippingAddress("Main Plaza", "89", "Denver", "CO", "USA", "80201")
             );
             addOrderItem(order7, products.get(4), 1);
             addOrderItem(order7, products.get(5), 1);
@@ -878,7 +879,7 @@ public class DataLoader implements CommandLineRunner {
                     customers.get(8),
                     "ORD-2024-008",
                     15,
-                    new ShippingAddress("Calle Victoria", "23", "Granada", "Granada", "España", "18001")
+                    new ShippingAddress("Victory Street", "23", "Portland", "OR", "USA", "97201")
             );
             addOrderItem(order8, products.get(1), 3);
             addOrderItem(order8, products.get(3), 2);
@@ -890,19 +891,19 @@ public class DataLoader implements CommandLineRunner {
                     customers.get(9),
                     "ORD-2024-009",
                     12,
-                    new ShippingAddress("Avenida Principal", "67", "Murcia", "Murcia", "España", "30001")
+                    new ShippingAddress("Main Avenue", "67", "Nashville", "TN", "USA", "37201")
             );
             addOrderItem(order9, products.get(2), 1);
             addOrderItem(order9, products.get(5), 2);
             addOrderItem(order9, products.get(7), 1);
             orders.add(order9);
 
-            // Orden 10: Jorge Vázquez - 4 productos
+            // Orden 10: Jorge VÃ¡zquez - 4 productos
             Order order10 = createCompletedOrder(
                     customers.get(10),
                     "ORD-2024-010",
                     8,
-                    new ShippingAddress("Calle Real", "90", "Alicante", "Alicante", "España", "03001")
+                    new ShippingAddress("Royal Street", "90", "Las Vegas", "NV", "USA", "89101")
             );
             addOrderItem(order10, products.get(4), 2);
             addOrderItem(order10, products.get(6), 1);
@@ -910,58 +911,58 @@ public class DataLoader implements CommandLineRunner {
             addOrderItem(order10, products.get(9), 1);
             orders.add(order10);
 
-            // Orden 11: Ana García (segunda orden) - 2 productos
+            // Orden 11: Ana GarcÃ­a (segunda orden) - 2 productos
             Order order11 = createCompletedOrder(
                     customers.get(1),
                     "ORD-2024-011",
                     7,
-                    new ShippingAddress("Calle Mayor", "123", "Madrid", "Madrid", "España", "28001")
+                    new ShippingAddress("Main Street", "123", "Los Angeles", "CA", "USA", "90001")
             );
             addOrderItem(order11, products.get(5), 1);
             addOrderItem(order11, products.get(7), 2);
             orders.add(order11);
 
-            // Orden 12: Carlos López (segunda orden) - 3 productos
+            // Orden 12: Carlos LÃ³pez (segunda orden) - 3 productos
             Order order12 = createCompletedOrder(
                     customers.get(2),
                     "ORD-2024-012",
                     6,
-                    new ShippingAddress("Avenida Libertad", "45", "Barcelona", "Barcelona", "España", "08001")
+                    new ShippingAddress("Liberty Avenue", "45", "San Francisco", "CA", "USA", "94102")
             );
             addOrderItem(order12, products.get(0), 2);
             addOrderItem(order12, products.get(3), 1);
             addOrderItem(order12, products.get(8), 1);
             orders.add(order12);
 
-            // Orden 13: María Rodríguez (segunda orden) - 3 productos
+            // Orden 13: MarÃ­a RodrÃ­guez (segunda orden) - 3 productos
             Order order13 = createCompletedOrder(
                     customers.get(3),
                     "ORD-2024-013",
                     5,
-                    new ShippingAddress("Plaza España", "78", "Valencia", "Valencia", "España", "46001")
+                    new ShippingAddress("Valencia Street", "78", "Houston", "TX", "USA", "77001")
             );
             addOrderItem(order13, products.get(2), 1);
             addOrderItem(order13, products.get(4), 2);
             addOrderItem(order13, products.get(9), 1);
             orders.add(order13);
 
-            // Orden 14: Pedro Martínez (segunda orden) - 2 productos
+            // Orden 14: Pedro MartÃ­nez (segunda orden) - 2 productos
             Order order14 = createCompletedOrder(
                     customers.get(4),
                     "ORD-2024-014",
                     4,
-                    new ShippingAddress("Calle Sol", "12", "Sevilla", "Sevilla", "España", "41001")
+                    new ShippingAddress("Sun Street", "12", "Miami", "FL", "USA", "33101")
             );
             addOrderItem(order14, products.get(1), 3);
             addOrderItem(order14, products.get(6), 1);
             orders.add(order14);
 
-            // Orden 15: Laura Sánchez (segunda orden) - 4 productos
+            // Orden 15: Laura SÃ¡nchez (segunda orden) - 4 productos
             Order order15 = createCompletedOrder(
                     customers.get(5),
                     "ORD-2024-015",
                     3,
-                    new ShippingAddress("Avenida Constitución", "34", "Málaga", "Málaga", "España", "29001")
+                    new ShippingAddress("Constitution Avenue", "34", "Phoenix", "AZ", "USA", "85001")
             );
             addOrderItem(order15, products.get(0), 1);
             addOrderItem(order15, products.get(2), 1);
@@ -969,24 +970,24 @@ public class DataLoader implements CommandLineRunner {
             addOrderItem(order15, products.get(8), 1);
             orders.add(order15);
 
-            // Orden 16: Javier Fernández (segunda orden) - 3 productos
+            // Orden 16: Javier FernÃ¡ndez (segunda orden) - 3 productos
             Order order16 = createCompletedOrder(
                     customers.get(6),
                     "ORD-2024-016",
                     2,
-                    new ShippingAddress("Calle Comercio", "56", "Bilbao", "Vizcaya", "España", "48001")
+                    new ShippingAddress("Commerce Street", "56", "Seattle", "WA", "USA", "98101")
             );
             addOrderItem(order16, products.get(3), 2);
             addOrderItem(order16, products.get(7), 1);
             addOrderItem(order16, products.get(9), 2);
             orders.add(order16);
 
-            // Orden 17: Sofía Gómez (segunda orden) - 2 productos
+            // Orden 17: SofÃ­a GÃ³mez (segunda orden) - 2 productos
             Order order17 = createCompletedOrder(
                     customers.get(7),
                     "ORD-2024-017",
                     1,
-                    new ShippingAddress("Plaza Mayor", "89", "Zaragoza", "Zaragoza", "España", "50001")
+                    new ShippingAddress("Main Plaza", "89", "Denver", "CO", "USA", "80201")
             );
             addOrderItem(order17, products.get(1), 2);
             addOrderItem(order17, products.get(4), 1);
@@ -997,7 +998,7 @@ public class DataLoader implements CommandLineRunner {
                     customers.get(8),
                     "ORD-2024-018",
                     1,
-                    new ShippingAddress("Calle Victoria", "23", "Granada", "Granada", "España", "18001")
+                    new ShippingAddress("Victory Street", "23", "Portland", "OR", "USA", "97201")
             );
             addOrderItem(order18, products.get(0), 1);
             addOrderItem(order18, products.get(5), 1);
@@ -1010,28 +1011,30 @@ public class DataLoader implements CommandLineRunner {
                     customers.get(9),
                     "ORD-2024-019",
                     1,
-                    new ShippingAddress("Avenida Principal", "67", "Murcia", "Murcia", "España", "30001")
+                    new ShippingAddress("Main Avenue", "67", "Nashville", "TN", "USA", "37201")
             );
             addOrderItem(order19, products.get(3), 2);
             addOrderItem(order19, products.get(7), 1);
             addOrderItem(order19, products.get(8), 2);
             orders.add(order19);
 
-            // Orden 20: Jorge Vázquez (segunda orden) - 3 productos
+            // Orden 20: Jorge VÃ¡zquez (segunda orden) - 3 productos
             Order order20 = createCompletedOrder(
                     customers.get(10),
                     "ORD-2024-020",
                     1,
-                    new ShippingAddress("Calle Real", "90", "Alicante", "Alicante", "España", "03001")
+                    new ShippingAddress("Royal Street", "90", "Las Vegas", "NV", "USA", "89101")
             );
             addOrderItem(order20, products.get(2), 1);
             addOrderItem(order20, products.get(4), 2);
             addOrderItem(order20, products.get(6), 1);
             orders.add(order20);
 
-            // Calcular totales y actualizar montos de pago
+            // Calcular totales, EcoPoints y actualizar montos de pago
             orders.forEach(order -> {
                 order.calculateImpact();
+                // Calcular EcoPoints dinámicamente basado en el impacto real
+                calculateAndSetEcoPoints(order);
                 // Actualizar el monto del pago con el total de la orden
                 if (order.getPayment() != null) {
                     order.getPayment().setAmount(order.getTotalAmount());
@@ -1053,7 +1056,7 @@ public class DataLoader implements CommandLineRunner {
         LocalDateTime orderDateTime = LocalDateTime.now().minusDays(daysAgo);
 
         Payment payment = Payment.builder()
-                .amount(BigDecimal.ZERO) // Se calculará después
+                .amount(BigDecimal.ZERO) // Se calcularÃ¡ despuÃ©s
                 .paymentDate(orderDateTime)
                 .build();
 
@@ -1063,7 +1066,7 @@ public class DataLoader implements CommandLineRunner {
                 .status(OrderStatus.DELIVERED)
                 .shippingAddress(address)
                 .payment(payment)
-                .ecoPointsEarned(30)
+                .ecoPointsEarned(0) // Se calculará después de agregar items
                 .items(new ArrayList<>())
                 .build();
 
@@ -1073,6 +1076,18 @@ public class DataLoader implements CommandLineRunner {
         order.setDeliveryDate(java.util.Date.from(orderDateTime.plusDays(5).atZone(java.time.ZoneId.systemDefault()).toInstant()));
 
         return order;
+    }
+
+    /**
+     * Helper: Calcula y asigna los EcoPoints a una orden completada
+     * Se debe llamar después de agregar todos los items
+     */
+    private void calculateAndSetEcoPoints(Order order) {
+        if (order != null && order.getStatus() == OrderStatus.DELIVERED) {
+            Integer ecoPoints = ecoPointsCalculationService.calculateEcoPoints(order);
+            order.setEcoPointsEarned(ecoPoints);
+            log.debug("EcoPoints calculados para orden {}: {} puntos", order.getOrderNumber(), ecoPoints);
+        }
     }
 
     /**
@@ -1106,3 +1121,4 @@ public class DataLoader implements CommandLineRunner {
         order.getItems().add(item);
     }
 }
+

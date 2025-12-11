@@ -99,7 +99,7 @@ public class SalesReportService {
         statistics.put("totalSales", totalSales);
         statistics.put("totalOrders", totalOrders);
         statistics.put("averageOrderValue", averageOrderValue);
-        statistics.put("currency", "EUR");
+        statistics.put("currency", "USD");
 
         return statistics;
     }
@@ -117,6 +117,48 @@ public class SalesReportService {
         return completedOrders.stream()
                 .map(order -> order.getPayment().getAmount())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    /**
+     * Obtener ventas totales de un cliente específico
+     */
+    @Transactional(readOnly = true)
+    public Map<String, Object> getSalesByCustomerId(Long customerId) {
+        List<Order> customerOrders = orderRepository.findAll().stream()
+                .filter(order -> order.getStatus() == OrderStatus.DELIVERED)
+                .filter(order -> order.getCustomer() != null)
+                .filter(order -> order.getCustomer().getId().equals(customerId))
+                .toList();
+
+        if (customerOrders.isEmpty()) {
+            return Map.of();
+        }
+
+        BigDecimal totalSales = customerOrders.stream()
+                .map(Order::getTotalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        long totalOrders = customerOrders.size();
+
+        BigDecimal averageOrderValue = totalSales.divide(
+                BigDecimal.valueOf(totalOrders),
+                2,
+                BigDecimal.ROUND_HALF_UP
+        );
+
+        // Obtener nombre del cliente desde la primera orden
+        String customerName = customerOrders.get(0).getCustomer().getFirstName() + " " +
+                             customerOrders.get(0).getCustomer().getLastName();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("customerId", customerId);
+        result.put("customerName", customerName);
+        result.put("totalSales", totalSales);
+        result.put("totalOrders", totalOrders);
+        result.put("averageOrderValue", averageOrderValue);
+        result.put("currency", "USD");
+
+        return result;
     }
 }
 
