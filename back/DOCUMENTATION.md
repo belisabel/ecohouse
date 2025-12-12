@@ -944,21 +944,8 @@ curl http://localhost:9000/api/products
 
 ### Paso 7: Datos de Ejemplo (Opcional)
 
-La aplicación carga automáticamente datos de ejemplo al iniciar:
-- ✅ 10 Marcas
-- ✅ 10 Categorías
-- ✅ 10 Certificaciones
-- ✅ 11 Clientes (1 admin + 10 usuarios)
-- ✅ 10 Productos con datos ambientales
-- ✅ 20 Órdenes completadas
+La aplicación carga automáticamente datos de ejemplo al iniciar
 
-**Credenciales de Admin:**
-- Email: `admin@ecohouse.com`
-- Password: `Admin2024!`
-
-**Credenciales de Usuario de Prueba:**
-- Email: `ana.garcia@gmail.com`
-- Password: `password123`
 
 ---
 
