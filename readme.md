@@ -3,21 +3,6 @@ Sistema de E-commerce Sostenible con Tracking de Impacto Ambiental
 
 Spring Boot Java MySQL AWS License
 
-📋 Tabla de Contenidos
-Descripción General
-Características Principales
-Arquitectura del Sistema
-Stack Tecnológico
-Estructura del Proyecto
-Modelo de Datos
-API Endpoints
-Configuración
-Instalación y Ejecución
-Despliegue
-Testing
-Seguridad
-Sistema de EcoPoints
-Contribución
 🌍 Descripción General
 EcoHouse es una plataforma de e-commerce especializada en productos sostenibles y ecológicos. El backend proporciona una API RESTful completa que permite:
 
@@ -62,3 +47,4 @@ Badges y achievements
 ✅ Estadísticas por cliente
 ✅ Dashboard de impacto ambiental
 ✅ Tendencias de compra sostenible
+
